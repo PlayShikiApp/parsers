@@ -82,7 +82,7 @@ def get_ongoing_html(id):
 		open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
 	return open(out_file, "r").read()
 
-async def crawl_worker(idx):
+async def get_ongoing_html_async(idx):
 	global QUEUE_LEN, ONGOING_IDS, OUT_DIR
 	ongoing_id = ONGOING_IDS[idx]
 	out_file = os.path.join(OUT_DIR, "%d.html" % ongoing_id)
@@ -97,7 +97,7 @@ async def crawl_worker(idx):
 
 async def coro(start, num_threads = 5):
 	global QUEUE_LEN
-	tasks = [asyncio.ensure_future(crawl_worker(i)) for i in range(start, min(start + num_threads, QUEUE_LEN))]
+	tasks = [asyncio.ensure_future(get_ongoing_html_async(i)) for i in range(start, min(start + num_threads, QUEUE_LEN))]
 	await asyncio.wait(tasks)
 
 def main(start = 0, num_threads = 5, use_asyncio = True):
