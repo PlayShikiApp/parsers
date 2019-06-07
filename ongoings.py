@@ -89,7 +89,6 @@ async def get_ongoing_html_async(id):
 	global QUEUE_LEN, ONGOING_IDS, OUT_DIR
 
 	out_file = os.path.join(OUT_DIR, "%d.html" % id)
-	print("[%d / %d] %s" % (ONGOING_IDS.index(id) + 1, QUEUE_LEN, out_file))
 	try:
 		if os.path.exists(out_file):
 			return
@@ -97,6 +96,7 @@ async def get_ongoing_html_async(id):
 		await async_urlopen(req, out_file)
 	except:
 		raise
+	print("[%d / %d] %s" % (ONGOING_IDS.index(id) + 1, QUEUE_LEN, out_file))
 
 async def coro(start, num_threads = 5):
 	global ONGOING_IDS, QUEUE_LEN
