@@ -15,17 +15,17 @@ def get_ongoing_id(article):
 
 DATE_FORMAT = "%d.%m.%Y"
 
-ongoing_ids = []
-out_dir = ""
+ONGOING_IDS = []
+OUT_DIR = ""
 
 def fetch_all_ongoings(ids):
-	out_dir = datetime.now().strftime(DATE_FORMAT)
-	if not os.path.exists(out_dir):
-		os.makedirs(out_dir)
+	OUT_DIR = datetime.now().strftime(DATE_FORMAT)
+	if not os.path.exists(OUT_DIR):
+		os.makedirs(OUT_DIR)
 	total = len(ids)
 	for n, id in enumerate(ids, start = 1):
 		print("%d / %d" % (n, total))
-		out_file = os.path.join(out_dir, "%d.html" % id)
+		out_file = os.path.join(OUT_DIR, "%d.html" % id)
 		if os.path.exists(out_file):
 				continue
 		req = urllib.request.Request("https://shikimori.one/animes/%d" % id)
@@ -72,21 +72,21 @@ def parse_ongoing(html):
 	return res
 
 def get_ongoing_html(id):
-	global out_dir
-	if not os.path.exists(out_dir):
-		os.makedirs(out_dir)
+	global OUT_DIR
+	if not os.path.exists(OUT_DIR):
+		os.makedirs(OUT_DIR)
 
-	out_file = os.path.join(out_dir, "%d.html" % id)
+	out_file = os.path.join(OUT_DIR, "%d.html" % id)
 	if not os.path.exists(out_file):
 		req = urllib.request.Request("https://shikimori.one/animes/%d" % id)
 		open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
 	return open(out_file, "r").read()
 
 async def crawl_worker(idx):
-	global queue_len, ongoing_ids, out_dir
-	ongoing_id = ongoing_ids[idx]
-	out_file = os.path.join(out_dir, "%d.html" % ongoing_id)
-	print("[%d / %d] %s" % (idx + 1, queue_len, out_file))
+	global QUEUE_LEN, ONGOING_IDS, OUT_DIR
+	ongoing_id = ONGOING_IDS[idx]
+	out_file = os.path.join(OUT_DIR, "%d.html" % ongoing_id)
+	print("[%d / %d] %s" % (idx + 1, QUEUE_LEN, out_file))
 	try:
 		if os.path.exists(out_file):
 			return
@@ -96,30 +96,30 @@ async def crawl_worker(idx):
 		return
 
 async def coro(start, num_threads = 3):
-	global queue_len
-	tasks = [asyncio.ensure_future(crawl_worker(i)) for i in range(start, min(start + num_threads, queue_len))]
+	global QUEUE_LEN
+	tasks = [asyncio.ensure_future(crawl_worker(i)) for i in range(start, min(start + num_threads, QUEUE_LEN))]
 	await asyncio.wait(tasks)
 
 def main(start = 0, num_threads = 3, use_asyncio = True):
-	global ongoing_ids, queue_len, out_dir
+	global ONGOING_IDS, QUEUE_LEN, OUT_DIR
 	os.chdir("/media/chrono/Windows1/d/dev/node/parsers")
 	soup = BeautifulSoup(open("ongoings_07.06.2019.html", "r").read())
 	articles = soup.find_all("article")
-	ongoing_ids = [get_ongoing_id(a) for a in articles]
-	queue_len = len(ongoing_ids)
+	ONGOING_IDS = [get_ongoing_id(a) for a in articles]
+	QUEUE_LEN = len(ONGOING_IDS)
 
 	if use_asyncio:
 		ioloop = asyncio.get_event_loop()
 
-		out_dir = datetime.now().strftime(DATE_FORMAT)
-		if not os.path.exists(out_dir):
-			os.makedirs(out_dir)
+		OUT_DIR = datetime.now().strftime(DATE_FORMAT)
+		if not os.path.exists(OUT_DIR):
+			os.makedirs(OUT_DIR)
 
-		while start < queue_len:
+		while start < QUEUE_LEN:
 			ioloop.run_until_complete(coro(start, num_threads))
 			start += num_threads
 	else:
-		fetch_all_ongoings(ongoing_ids)
+		fetch_all_ongoings(ONGOING_IDS)
 
 if __name__ == "__main__":
 	main()
