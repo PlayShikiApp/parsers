@@ -82,27 +82,32 @@ def get_ongoing_html(id):
 		open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
 	return open(out_file, "r").read()
 
-async def get_ongoing_html_async(idx):
+async def async_urlopen(req, out_file):
+	open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
+
+async def get_ongoing_html_async(id):
 	global QUEUE_LEN, ONGOING_IDS, OUT_DIR
-	ongoing_id = ONGOING_IDS[idx]
-	out_file = os.path.join(OUT_DIR, "%d.html" % ongoing_id)
-	print("[%d / %d] %s" % (idx + 1, QUEUE_LEN, out_file))
+
+	out_file = os.path.join(OUT_DIR, "%d.html" % id)
+	print("[%d / %d] %s" % (ONGOING_IDS.index(id) + 1, QUEUE_LEN, out_file))
 	try:
 		if os.path.exists(out_file):
 			return
-		req = urllib.request.Request("https://shikimori.one/animes/%d" % ongoing_id)
-		await open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
+		req = urllib.request.Request("https://shikimori.one/animes/%d" % id)
+		await async_urlopen(req, out_file)
 	except:
-		return
+		raise
 
 async def coro(start, num_threads = 5):
-	global QUEUE_LEN
-	tasks = [asyncio.ensure_future(get_ongoing_html_async(i)) for i in range(start, min(start + num_threads, QUEUE_LEN))]
+	global ONGOING_IDS, QUEUE_LEN
+	task_queue = ONGOING_IDS[start: min(start + num_threads, QUEUE_LEN)]
+	tasks = [asyncio.ensure_future(get_ongoing_html_async(id)) for id in task_queue]
 	await asyncio.wait(tasks)
 
-def main(start = 0, num_threads = 5, use_asyncio = True):
+def main(root_dir = "", start = 0, num_threads = 5, use_asyncio = True):
 	global ONGOING_IDS, QUEUE_LEN, OUT_DIR
-	os.chdir("/media/chrono/Windows1/d/dev/node/parsers")
+	if root_dir:
+		os.chdir(root_dir)
 	soup = BeautifulSoup(open("ongoings_07.06.2019.html", "r").read())
 	articles = soup.find_all("article")
 	ONGOING_IDS = [get_ongoing_id(a) for a in articles]
