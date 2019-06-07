@@ -95,12 +95,12 @@ async def crawl_worker(idx):
 	except:
 		return
 
-async def coro(start, num_threads = 3):
+async def coro(start, num_threads = 5):
 	global QUEUE_LEN
 	tasks = [asyncio.ensure_future(crawl_worker(i)) for i in range(start, min(start + num_threads, QUEUE_LEN))]
 	await asyncio.wait(tasks)
 
-def main(start = 0, num_threads = 3, use_asyncio = True):
+def main(start = 0, num_threads = 5, use_asyncio = True):
 	global ONGOING_IDS, QUEUE_LEN, OUT_DIR
 	os.chdir("/media/chrono/Windows1/d/dev/node/parsers")
 	soup = BeautifulSoup(open("ongoings_07.06.2019.html", "r").read())
