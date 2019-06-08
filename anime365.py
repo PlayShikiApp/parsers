@@ -104,7 +104,17 @@ class Anime365Parser(parser.Parser):
 			return self.handler_episodes_list_not_found(anime_english)
 
 		episodes = [a.get("href") for a in episodes_list.find_all("a", {"class": "m-episode-item"})]
-		return {int(e.split("/")[-1].split("-")[0]): self.build_url(path = e) for e in episodes}
+		res = dict()
+		for e in episodes:
+			url = self.build_url(path = e)
+			episode_num = e.split("/")[-1].split("-")[0]
+			if not episode_num.isdigit():
+				continue
+			episode_num = int(episode_num)
+
+			res[episode_num] = url
+
+		return res
 
 	@lru_cache(maxsize = None)
 	def get_videos_list(self, anime_english, episode_num):
