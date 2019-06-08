@@ -1,6 +1,7 @@
 import os
 import urllib.request
 import mechanize
+import pandas as pd
 
 from functools import lru_cache
 from urllib.parse import urlencode, urlparse, urlunparse, quote_plus
@@ -17,6 +18,15 @@ class Anime365Parser(parser.Parser):
 		"subtitles": ["russkie-subtitry", "angliyskie-subtitry", "yaponskie-subtitry"],
 		"raw": ["raw"]
 	}
+
+	language_by_kind = {
+		"ozvuchka": "russian",
+		"russkie-subtitry": "russian",
+		"angliyskie-subtitry": "english",
+		"yaponskie-subtitry": "japanese",
+		"raw": "japanese"
+	}
+
 	def __init__(self, query_parameter = "q"):
 		self.scheme = "https"
 		self.netloc = "smotret-anime-365.ru"
@@ -70,17 +80,33 @@ class Anime365Parser(parser.Parser):
 
 		anime_url = episodes_list[episode_num]
 
-		videos_list = []
+		videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "language", "author"])
+		url_to_embed = lambda url: self.build_url(path = "translations/embed/" + url.split("-")[-1])
 		for shiki_kind, kinds in self.video_kinds.items():
 			for kind in kinds:
 				page_name = os.path.join(anime_english, str(episode_num), shiki_kind, "%s.html" % kind)
 				page_data = self.load_page(page_name)
+				b = BeautifulSoup(page_data)
+				quality = "unknown"
+				try:
+					quality = max([int(a.text.split("(")[-1].split(")")[0][:-1]) for a in b.find("div", {"class": 'm-translation-view-download'}).find_all("a") if a.text.startswith("Скачать видео (")])
+					quality = "%dp" % quality
+				except AttributeError:
+					pass
+
 				if not page_data:
 					res = self.browser.open(os.path.join(anime_url, kind))
 					page_data = res.get_data()
 					self.save_page(page_name, page_data)
 				content = BeautifulSoup(page_data, features = "html.parser")
-				list_by_kind = [(self.build_url(path = a.get("href")), a.text) for a in content.find("div", {"class": "m-select-translation-list"}).find_all("a", {"class": "truncate"})]
+				list_by_kind = [(url_to_embed(url = a.get("href")), a.text) for a in content.find("div", {"class": "m-select-translation-list"}).find_all("a", {"class": "truncate"})]
 				#print(videos_list)
-				videos_list += list_by_kind
+				for a in content.find("div", {"class": "m-select-translation-list"}).find_all("a", {"class": "truncate"}):
+					videos_list = videos_list.append({"url": url_to_embed(a.get("href")),
+							    "episode": str(episode_num),
+							    "author": a.text,
+							    "quality": quality,
+							    "language": self.language_by_kind[kind],
+							    "kind": shiki_kind
+							   }, ignore_index = True)
 		return videos_list
