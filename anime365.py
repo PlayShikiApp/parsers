@@ -1,4 +1,5 @@
 import os
+import string
 import urllib.request
 import mechanize
 import pandas as pd
@@ -27,6 +28,8 @@ class Anime365Parser(parser.Parser):
 		"raw": "japanese"
 	}
 
+	anime365_name_chars = string.ascii_letters + string.digits + " "
+
 	def __init__(self, query_parameter = "q"):
 		self.scheme = "https"
 		self.netloc = "smotret-anime-365.ru"
@@ -38,6 +41,14 @@ class Anime365Parser(parser.Parser):
 		super().__init__(url = url, main_url = main_url, headers = self.headers, query_kwargs = query_kwargs, query_parameter = query_parameter)
 		self.setup_urlopener()
 
+	def to_hosting_anime_name(self, anime_english = "", url = ""):
+		if anime_english:
+			anime_english = anime_english.lower()
+			return "".join([c for c in anime_english if c in self.anime365_name_chars]).replace(" ", "-")
+		if url:
+			return "-".join(url.split("/")[-1].split("-")[:-1])
+
+
 	def search_anime(self, anime_english):
 		built_url = self.build_search_url(anime_english)
 
@@ -45,11 +56,32 @@ class Anime365Parser(parser.Parser):
 		page_data = self.load_page(page_name)
 		if not page_data:
 			res = self.browser.open(built_url)
+			page_data = res.get_data()
 			redir_url = res.geturl()
 
 			# if not found
 			if "search" in redir_url:
-				return None
+				results = BeautifulSoup(page_data, features = "html.parser").find_all("div", {"class": "m-catalog-item"})
+				#print(len(results))
+				if not results:
+					return None
+
+				found = False
+				found_url = ""
+				name = self.to_hosting_anime_name(anime_english = anime_english)
+				for result in results:
+					url = results[0].find("a").get("href")
+					url_to_name = self.to_hosting_anime_name(url = url)
+					#print(url_to_name, name)
+					found = (url_to_name == name)
+					if found:
+						found_url = url
+						break
+
+				if not found:
+					return None
+
+				res = self.browser.open(self.build_url(path = found_url))
 
 			page_data = res.get_data()
 			if not page_data:
@@ -80,7 +112,7 @@ class Anime365Parser(parser.Parser):
 
 		anime_url = episodes_list[episode_num]
 
-		videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "language", "author"])
+		videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])
 		url_to_embed = lambda url: self.build_url(path = "translations/embed/" + url.split("-")[-1])
 		for shiki_kind, kinds in self.video_kinds.items():
 			for kind in kinds:
@@ -104,6 +136,7 @@ class Anime365Parser(parser.Parser):
 				for a in content.find("div", {"class": "m-select-translation-list"}).find_all("a", {"class": "truncate"}):
 					videos_list = videos_list.append({"url": url_to_embed(a.get("href")),
 							    "episode": str(episode_num),
+							    "video_hosting": self.netloc,
 							    "author": a.text,
 							    "quality": quality,
 							    "language": self.language_by_kind[kind],
