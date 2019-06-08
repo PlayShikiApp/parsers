@@ -9,14 +9,15 @@ import urllib.parse
 
 from bs4 import BeautifulSoup
 
-def get_ongoing_id(article):
-	ongoing_url = article.find("a").get("data-tooltip_url")
-	return int(urllib.parse.urlparse(ongoing_url).path.split("/")[2].split("-")[0])
-
-DATE_FORMAT = "%d.%m.%Y"
+from parsers import parser
+DATE_FORMAT = parser.DATE_FORMAT
 
 ONGOING_IDS = []
 OUT_DIR = ""
+
+def get_ongoing_id(article):
+	ongoing_url = article.find("a").get("data-tooltip_url")
+	return int(urllib.parse.urlparse(ongoing_url).path.split("/")[2].split("-")[0])
 
 def fetch_all_ongoings(ids):
 	OUT_DIR = datetime.now().strftime(DATE_FORMAT)

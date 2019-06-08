@@ -1,23 +1,51 @@
+import os
 import urllib.request
 import mechanize
 
+from datetime import datetime
 from urllib.parse import urlencode, urlparse, urlunparse, quote_plus
 from bs4 import BeautifulSoup
 
+DATE_FORMAT = "%d.%m.%Y"
+CACHE_DIR = "parsers_cache"
+
 class Parser:
 	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q"):
+		if not hasattr(self, "scheme") or not hasattr(self, "netloc"):
+			raise ValueError("Derived classes must set scheme and netloc atributes before invoking parent class")
+ 
 		self.url = url
 		self.main_url = main_url
 		self.parsed_url = urllib.parse.urlparse(self.url)
 		self.headers
 		self.query_kwargs = query_kwargs
 		self.query_parameter = query_parameter
+		self.ensure_cache_dir_exists()
 		return
 
-	def build_query(self, anime_english):
-		query = self.query_kwargs.copy()
-		query[self.query_parameter] = anime_english
-		return query
+	def ensure_cache_dir_exists(self):
+		self.cache_root = os.path.join(CACHE_DIR, datetime.now().strftime(DATE_FORMAT))
+		if not os.path.exists(self.cache_root):
+			os.makedirs(self.cache_root)
+
+	def get_page_path(self, page_name):
+		site = self.netloc[1:] if self.netloc.startswith("/") else self.netloc
+		return os.path.join(self.cache_root, site, page_name)
+
+	def save_page(self, page_name, page_data):
+		page_path = self.get_page_path(page_name)
+		page_dirname = os.path.dirname(page_path)
+		if not os.path.isdir(page_dirname):
+			os.makedirs(page_dirname)
+		open(page_path, "wb").write(page_data)
+
+	def load_page(self, page_name):
+		page_path = self.get_page_path(page_name)
+
+		if not os.path.isfile(page_path) or os.stat(page_path).st_size == 0:
+			return b""
+
+		return open(page_path, "rb").read()
 
 	def get_cookie(self, url = ""):
 		url = url or self.main_url
@@ -31,7 +59,7 @@ class Parser:
 		self.browser.addheaders.append(("cookie", cookie))
 
 	def setup_urlopener(self, url = ""):
-		print("setup_urlopener: start")
+		#print("setup_urlopener: start")
 		self.browser = mechanize.Browser()
 		self.browser.set_handle_equiv(True)
 		self.browser.set_handle_gzip(True)
@@ -42,12 +70,22 @@ class Parser:
 		self.browser.addheaders = self.headers.items()
 
 		url = url or self.main_url
-		print("setup_urlopener: open url = %s" % url)
+		#print("setup_urlopener: open url = %s" % url)
 		#cookie = self.get_cookie(url)
 		#if cookie:
 		#	self.set_cookie(cookie)
 
-	def build_url(self, anime_english):
+	def build_query(self, anime_english):
+		query = self.query_kwargs.copy()
+		query[self.query_parameter] = anime_english
+		return query
+
+	def build_url(self, scheme = "", netloc = "", path = "", params = None, query = None, fragment = None):
+		scheme = scheme or self.scheme
+		netloc = netloc or self.netloc
+		return urllib.parse.urlunparse((scheme, netloc, path, params, query, fragment))
+
+	def build_search_url(self, anime_english):
 		query = self.build_query(anime_english)
 		built_url = urllib.parse.urlunparse((self.parsed_url.scheme, self.parsed_url.netloc, self.parsed_url.path, None, urlencode(query, quote_via = quote_plus), None))
 		return built_url
@@ -57,5 +95,9 @@ class Parser:
 		return None
 
 	def handler_episodes_list_not_found(self, anime_english):
-		print("Warning: anime \"%s\" was found, but episodes list couldn't have been retrieved" % anime_english)
+		print("Warning: anime \"%s\" was found, but episodes list couldn't been retrieved" % anime_english)
+		return None
+
+	def handler_epidode_not_found(self, anime_english, episode_num):
+		print("Warning: episode %d for anime \"%s\" couldn't been found" % (episode_num, anime_english))
 		return None
