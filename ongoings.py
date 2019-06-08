@@ -3,14 +3,13 @@
 
 import os
 import asyncio
-from datetime import datetime
 import urllib.request
 import urllib.parse
+import dateparser
 
+from datetime import datetime
 from bs4 import BeautifulSoup
-
-from parsers import parser
-DATE_FORMAT = parser.DATE_FORMAT
+from parsers.parser import DATE_FORMAT
 
 ONGOING_IDS = []
 OUT_DIR = ""
@@ -33,7 +32,7 @@ def fetch_all_ongoings(ids):
 		open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
 
 def parse_ongoing(html):
-	content = BeautifulSoup(html).find("div", {"class": "l-content"})
+	content = BeautifulSoup(html, features="html5lib").find("div", {"class": "l-content"})
 	dateCreated = ""
 
 	entry_info = content.find("div", "b-entry-info")
@@ -53,7 +52,7 @@ def parse_ongoing(html):
 
 	if "Эпизоды:" in res:
 		episodes = res["Эпизоды:"]
-		res["episodes_available"], res["episodes_total"] = episodes.replace(" ", "").split("/")
+		res["episodes_available"], res["episodes_total"] = [int(i) for i in episodes.replace(" ", "").split("/")]
 
 	if "Следующий эпизод:" in res:
 		next_episode_date = res["Следующий эпизод:"]
@@ -109,7 +108,7 @@ def main(root_dir = "", start = 0, num_threads = 5, use_asyncio = True):
 	global ONGOING_IDS, QUEUE_LEN, OUT_DIR
 	if root_dir:
 		os.chdir(root_dir)
-	soup = BeautifulSoup(open("ongoings_07.06.2019.html", "r").read())
+	soup = BeautifulSoup(open("ongoings_07.06.2019.html", "r").read(), features="html5lib")
 	articles = soup.find_all("article")
 	ONGOING_IDS = [get_ongoing_id(a) for a in articles]
 	QUEUE_LEN = len(ONGOING_IDS)
