@@ -33,6 +33,8 @@ class Anime365Parser(parser.Parser):
 	def __init__(self, query_parameter = "q"):
 		self.scheme = "https"
 		self.netloc = "smotret-anime-365.ru"
+		# for compatibility reasons
+		self.netloc_alias = "smotretanime.ru"
 		path = "/catalog/search"
 		url = urllib.parse.urlunparse((self.scheme, self.netloc, path, None, None, None))
 		main_url = urllib.parse.urlunparse((self.scheme, self.netloc, "", None, None, None))
@@ -113,7 +115,7 @@ class Anime365Parser(parser.Parser):
 		anime_url = episodes_list[episode_num]
 
 		videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])
-		url_to_embed = lambda url: self.build_url(path = "translations/embed/" + url.split("-")[-1])
+		url_to_embed = lambda url: self.build_url(netloc = self.netloc_alias, path = "translations/embed/" + url.split("-")[-1])
 		for shiki_kind, kinds in self.video_kinds.items():
 			for kind in kinds:
 				page_name = os.path.join(anime_english, str(episode_num), shiki_kind, "%s.html" % kind)
@@ -136,7 +138,7 @@ class Anime365Parser(parser.Parser):
 				for a in content.find("div", {"class": "m-select-translation-list"}).find_all("a", {"class": "truncate"}):
 					videos_list = videos_list.append({"url": url_to_embed(a.get("href")),
 							    "episode": str(episode_num),
-							    "video_hosting": self.netloc,
+							    "video_hosting": self.netloc_alias,
 							    "author": a.text,
 							    "quality": quality,
 							    "language": self.language_by_kind[kind],
