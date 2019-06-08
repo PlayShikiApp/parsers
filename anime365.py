@@ -57,13 +57,16 @@ class Anime365Parser(parser.Parser):
 		page_name = "%s.html" % anime_english
 		page_data = self.load_page(page_name)
 		if not page_data:
-			res = self.browser.open(built_url)
+			try:
+				res = self.browser_open(built_url)
+			except RuntimeError:
+				return self.handler_resource_is_unavailable()
 			page_data = res.get_data()
 			redir_url = res.geturl()
 
 			# if not found
 			if "search" in redir_url:
-				results = BeautifulSoup(page_data, features = "html.parser").find_all("div", {"class": "m-catalog-item"})
+				results = BeautifulSoup(page_data, features = "html5lib").find_all("div", {"class": "m-catalog-item"})
 				#print(len(results))
 				if not results:
 					return None
@@ -82,8 +85,10 @@ class Anime365Parser(parser.Parser):
 
 				if not found:
 					return None
-
-				res = self.browser.open(self.build_url(path = found_url))
+				try:
+					res = self.browser_open(self.build_url(path = found_url))
+				except RuntimeError:
+					return self.handler_resource_is_unavailable()
 
 			page_data = res.get_data()
 			if not page_data:
@@ -97,7 +102,7 @@ class Anime365Parser(parser.Parser):
 		if not anime_page:
 			return self.handler_anime_not_found(anime_english)
 
-		content = BeautifulSoup(anime_page, features = "html.parser")
+		content = BeautifulSoup(anime_page, features = "html5lib")
 		episodes_list = content.find("div", {"class": "m-episode-list"})
 
 		if not episodes_list:
@@ -139,10 +144,13 @@ class Anime365Parser(parser.Parser):
 					pass
 
 				if not page_data:
-					res = self.browser.open(os.path.join(anime_url, kind))
+					try:
+						res = self.browser_open(os.path.join(anime_url, kind))
+					except RuntimeError:
+						return self.handler_resource_is_unavailable()
 					page_data = res.get_data()
 					self.save_page(page_name, page_data)
-				content = BeautifulSoup(page_data, features = "html.parser")
+				content = BeautifulSoup(page_data, features = "html5lib")
 				list_by_kind = [(url_to_embed(url = a.get("href")), a.text) for a in content.find("div", {"class": "m-select-translation-list"}).find_all("a", {"class": "truncate"})]
 				#print(videos_list)
 				for a in content.find("div", {"class": "m-select-translation-list"}).find_all("a", {"class": "truncate"}):

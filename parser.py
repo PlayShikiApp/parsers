@@ -1,5 +1,7 @@
 import os
-import urllib.request
+import sys
+import time
+import urllib.request, urllib.error
 import mechanize
 
 from datetime import datetime
@@ -8,6 +10,12 @@ from bs4 import BeautifulSoup
 
 DATE_FORMAT = "%d.%m.%Y"
 CACHE_DIR = "parsers_cache"
+
+
+def catch(msg):
+	__func__ = sys._getframe().f_back.f_code.co_name
+	exc_type, exc_obj, exc_tb = sys.exc_info()
+	print("%s: %s on line %d: %s%s" %(__func__, exc_type, exc_tb.tb_lineno, exc_obj, msg))
 
 class Parser:
 	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q"):
@@ -75,6 +83,17 @@ class Parser:
 		#if cookie:
 		#	self.set_cookie(cookie)
 
+	def browser_open(self, url, retry_count = 5, retry_delay = 5):
+		error_reason = ""
+		for retry in range(retry_count):
+			try:
+				return self.browser.open(url)
+			except urllib.error.URLError as e:
+				error_reason = e.reason
+				catch(error_reason)
+			time.sleep(retry_delay)
+		raise RuntimeError("Unable to open URL %s after %d retries" % (url, retry_count))
+
 	def build_query(self, anime_english):
 		query = self.query_kwargs.copy()
 		query[self.query_parameter] = anime_english
@@ -100,4 +119,7 @@ class Parser:
 
 	def handler_epidode_not_found(self, anime_english, episode_num):
 		print("Warning: episode %d for anime \"%s\" couldn't been found" % (episode_num, anime_english))
+		return None
+
+	def handler_resource_is_unavailable(self):
 		return None

@@ -7,6 +7,7 @@ import urllib.request
 import urllib.parse
 import dateparser
 
+from functools import lru_cache
 from datetime import datetime
 from bs4 import BeautifulSoup
 from parsers.parser import DATE_FORMAT
@@ -31,6 +32,7 @@ def fetch_all_ongoings(ids):
 		req = urllib.request.Request("https://shikimori.one/animes/%d" % id)
 		open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
 
+@lru_cache(maxsize = None)
 def parse_ongoing(html):
 	content = BeautifulSoup(html, features="html5lib").find("div", {"class": "l-content"})
 	dateCreated = ""
@@ -52,7 +54,11 @@ def parse_ongoing(html):
 
 	if "Эпизоды:" in res:
 		episodes = res["Эпизоды:"]
-		res["episodes_available"], res["episodes_total"] = [int(i) for i in episodes.replace(" ", "").split("/")]
+		res["episodes_available"], res["episodes_total"] = 0, 0
+		try:
+			res["episodes_available"], res["episodes_total"] = [int(i) for i in episodes.replace(" ", "").split("/")]
+		except ValueError:
+			pass
 
 	if "Следующий эпизод:" in res:
 		next_episode_date = res["Следующий эпизод:"]
