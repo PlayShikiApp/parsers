@@ -52,17 +52,17 @@ def parse_ongoing(html):
 		if len(values) == 2:
 			res[values[0]] = values[1]
 
+	res["episodes_available"], res["episodes_total"] = 0, 0
 	if "Эпизоды:" in res:
 		episodes = res["Эпизоды:"]
-		res["episodes_available"], res["episodes_total"] = 0, 0
 		try:
 			res["episodes_available"], res["episodes_total"] = [int(i) for i in episodes.replace(" ", "").split("/")]
 		except ValueError:
 			pass
 
+	res["next_episode"] = ""
 	if "Следующий эпизод:" in res:
 		next_episode_date = res["Следующий эпизод:"]
-		res["next_episode"] = ""
 		try:
 			res["next_episode"] = dateparser.parse(next_episode_date).strftime(DATE_FORMAT)
 		except:

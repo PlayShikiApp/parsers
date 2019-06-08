@@ -135,7 +135,7 @@ class Anime365Parser(parser.Parser):
 			for kind in kinds:
 				page_name = os.path.join(anime_english, str(episode_num), shiki_kind, "%s.html" % kind)
 				page_data = self.load_page(page_name)
-				b = BeautifulSoup(page_data)
+				b = BeautifulSoup(page_data, features = "html5lib")
 				quality = "unknown"
 				try:
 					quality = max([int(a.text.split("(")[-1].split(")")[0][:-1]) for a in b.find("div", {"class": 'm-translation-view-download'}).find_all("a") if a.text.startswith("Скачать видео (")])

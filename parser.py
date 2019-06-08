@@ -7,15 +7,10 @@ import mechanize
 from datetime import datetime
 from urllib.parse import urlencode, urlparse, urlunparse, quote_plus
 from bs4 import BeautifulSoup
+from parsers.tools import catch
 
 DATE_FORMAT = "%d.%m.%Y"
 CACHE_DIR = "parsers_cache"
-
-
-def catch(msg):
-	__func__ = sys._getframe().f_back.f_code.co_name
-	exc_type, exc_obj, exc_tb = sys.exc_info()
-	print("%s: %s on line %d: %s%s" %(__func__, exc_type, exc_tb.tb_lineno, exc_obj, msg))
 
 class Parser:
 	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q"):
