@@ -29,6 +29,15 @@ def save(from_pickle = False, format = "pkl"):
 
 	if format == "pkl":
 		pickle.dump("ongoings.pkl", "wb")
+	elif format == "sql":
+		table = result.values.tolist()
+		header = "INSERT INTO anime_videos (" + ", ".join(result.columns) + ") VALUES "
+		res = [header]
+		for row in table:
+			res.append("(" +", ".join(["\"%s\"" %i for i in row]) + "),")
+
+		res[-1] = res[-1][:-1] + ";"
+		open("ongoings.sql", "wb").write("\n".join(res).encode("u8"))
 
 def find_all_ongoings(parsers = {"smotretanime": anime365.Anime365Parser}):
 	ongoings.main()
