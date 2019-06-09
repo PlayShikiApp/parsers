@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: UTF-8 -*-
+
 import os
 import sys
 import time
@@ -13,10 +16,15 @@ DATE_FORMAT = "%d.%m.%Y"
 CACHE_DIR = "parsers_cache"
 
 class Parser:
+	to_db_kinds = {
+                "fandub": "озвучка",
+                "subtitles": "субтитры",
+                "raw": "оригинал"
+        }
 	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q"):
 		if not hasattr(self, "scheme") or not hasattr(self, "netloc"):
 			raise ValueError("Derived classes must set scheme and netloc atributes before invoking parent class")
- 
+
 		self.url = url
 		self.main_url = main_url
 		self.parsed_url = urllib.parse.urlparse(self.url)

@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: UTF-8 -*-
+
 import os
 import string
 import urllib.request
@@ -160,6 +163,6 @@ class Anime365Parser(parser.Parser):
 							    "author": a.text,
 							    "quality": quality,
 							    "language": self.language_by_kind[kind],
-							    "kind": shiki_kind
+							    "kind": self.to_db_kind[shiki_kind]
 							   }, ignore_index = True)
 		return videos_list
