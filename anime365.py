@@ -131,13 +131,37 @@ class Anime365Parser(parser.Parser):
 			return self.handler_epidode_not_found(anime_english, episode_num)
 
 		anime_url = episodes_list[episode_num]
+		page_name = os.path.join(anime_english, "%d.html" % episode_num)
+		page_data = self.load_page(page_name)
+		if not page_data:
+			try:
+				res = self.browser_open(anime_url)
+			except RuntimeError:
+				return self.handler_resource_is_unavailable()
+			page_data = res.get_data()
+			self.save_page(page_name, page_data)
+
+		content = BeautifulSoup(page_data, features = "html5lib")
+		avalable_kinds = [i.get("href").split("/")[-1] for i in content.find("div", {"class": "m-select-translation-list"}).find_all("a")]
+
+		kinds_dict = dict()
+		for shiki_kind, kinds in self.video_kinds.items():
+			kinds_dict[shiki_kind] = [kind for kind in kinds if kind in avalable_kinds]
 
 		videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])
 		url_to_embed = lambda url: self.build_url(netloc = self.netloc_alias, path = "translations/embed/" + url.split("-")[-1])
-		for shiki_kind, kinds in self.video_kinds.items():
+		for shiki_kind, kinds in kinds_dict.items():
 			for kind in kinds:
 				page_name = os.path.join(anime_english, str(episode_num), shiki_kind, "%s.html" % kind)
 				page_data = self.load_page(page_name)
+				if not page_data:
+					try:
+						res = self.browser_open(os.path.join(anime_url, kind))
+					except RuntimeError:
+						return self.handler_resource_is_unavailable()
+					page_data = res.get_data()
+					self.save_page(page_name, page_data)
+
 				b = BeautifulSoup(page_data, features = "html5lib")
 				quality = "unknown"
 				try:
@@ -146,13 +170,6 @@ class Anime365Parser(parser.Parser):
 				except AttributeError:
 					pass
 
-				if not page_data:
-					try:
-						res = self.browser_open(os.path.join(anime_url, kind))
-					except RuntimeError:
-						return self.handler_resource_is_unavailable()
-					page_data = res.get_data()
-					self.save_page(page_name, page_data)
 				content = BeautifulSoup(page_data, features = "html5lib")
 				list_by_kind = [(url_to_embed(url = a.get("href")), a.text) for a in content.find("div", {"class": "m-select-translation-list"}).find_all("a", {"class": "truncate"})]
 				#print(videos_list)
