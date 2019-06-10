@@ -134,7 +134,7 @@ class Anime365Parser(parser.Parser):
 
 		anime_url = episodes_list[episode_num]
 		page_name = os.path.join(anime_english, "%d.html" % episode_num)
-		page_data = self.load_or_save_page(page_name)
+		page_data = self.load_or_save_page(page_name, anime_url)
 
 		content = BeautifulSoup(page_data, features = "html5lib")
 		avalable_kinds = [i.get("href").split("/")[-1] for i in content.find("div", {"class": "m-select-translation-list"}).find_all("a")]
@@ -148,7 +148,7 @@ class Anime365Parser(parser.Parser):
 		for shiki_kind, kinds in kinds_dict.items():
 			for kind in kinds:
 				page_name = os.path.join(anime_english, str(episode_num), shiki_kind, "%s.html" % kind)
-				page_data = self.load_or_save_page(page_name)
+				page_data = self.load_or_save_page(page_name, os.path.join(anime_url, kind))
 
 				b = BeautifulSoup(page_data, features = "html5lib")
 				quality = "unknown"

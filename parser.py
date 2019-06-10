@@ -66,11 +66,11 @@ class Parser:
 
 		return open(page_path, "rb").read()
 
-	def load_or_save_page(self, page_name):
+	def load_or_save_page(self, page_name, url):
 		page_data = self.load_page(page_name)
 		if not page_data:
 			try:
-				res = self.browser_open(anime_url)
+				res = self.browser_open(url)
 			except RuntimeError:
 				return self.handler_resource_is_unavailable()
 			page_data = res.get_data()
