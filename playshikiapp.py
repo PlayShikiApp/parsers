@@ -31,7 +31,7 @@ def save(from_pickle = False, format = "pkl"):
 		result = pickle.load(open("ongoings.pkl", "rb"))
 
 	if format == "pkl":
-		pickle.dump("ongoings.pkl", "wb")
+		pickle.dump(result, open("ongoings.pkl", "wb"))
 	elif format == "sql":
 		table = result.values.tolist()
 		header = "INSERT INTO anime_videos (" + ", ".join(result.columns) + ") VALUES "
