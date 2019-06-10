@@ -32,12 +32,23 @@ In order not to hurt anyone, this repo tries to minimize amount of requests to t
 
 From python3 interpreter shell run (assuming you're in a toplevel directory, e.g. PlayShikiServer):
 ```
-from parsers import playshikiapp
-playshikiapp.save(format = "sql")
+>>> from parsers import playshikiapp
+>>> playshikiapp.save(format = "sql")
 ```
 
 This can take a while before all ongoings are fetched.
 At finish, this script will produce "ongoings.sql" file in the current repository. Another supported format is pkl (a raw dump of Python object to a file).
 
+#### Retrieve some info about an ongoing:
+```
+>>> from parsers import ongoings
+>>> ongoings.main()
+
+>>> ongoings.ONGOING_IDS[0]
+38524
+>>> ongoings.get_ongoing_info(38524)
+{'Тип:': 'TV Сериал', 'Эпизоды:': '7 / 10', 'Следующий эпизод:': '16 июня 18:10', 'Длительность эпизода:': ['23 мин.'], 'Статус:': ['\xa0с 29 апр. 2019 г.'], 'Жанры:': ['Action', 'Military', 'Mystery', 'Super Power', 'Drama', 'Fantasy', 'Shounen'], 'Рейтинг:': ['R-17'], 'Альтернативные названия:': ['···'], 'episodes_available': 7, 'episodes_total': 10, 'next_episode': '16.06.2019', 'type': 'tv', 'date_created': '29.04.2019', 'anime_english': 'Shingeki no Kyojin Season 3 Part 2', 'anime_russian': 'Вторжение гигантов 3. Вторая часть'}
+```
+
 ### Supported external sites
-For now this script only supports fetching episodes from smotret-anime-365.ru . It shouldn't be hard to add some other sites like sovetromantica.com . Some work on this already done by [AltWatcher extension](https://openuserjs.org/scripts/Lolec/Alt_Watcher_v3) (which makes a GET request to the internal sites' search engines).
+For now this script only supports fetching episodes from smotret-anime-365.ru . It shouldn't be hard to add some other sites like sovetromantica.com . Some work on this already done by AltWatcher extension (which makes a GET request to the internal sites' search engines).
