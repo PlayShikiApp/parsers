@@ -40,4 +40,4 @@ This can take a while before all ongoings are fetched.
 At finish, this script will produce "ongoings.sql" file in the current repository. Another supported format is pkl (a raw dump of Python object to a file).
 
 ### Supported external sites
-For now this script only supports fetching episodes from smotret-anime-365.ru . It shouldn't be hard to add some other sites like sovetromantica.com . Some work on this already done by AltWatcher extension (which makes a GET request to the internal sites' search engines).
+For now this script only supports fetching episodes from smotret-anime-365.ru . It shouldn't be hard to add some other sites like sovetromantica.com . Some work on this already done by [AltWatcher extension](https://openuserjs.org/scripts/Lolec/Alt_Watcher_v3) (which makes a GET request to the internal sites' search engines).
