@@ -58,6 +58,17 @@ class Parser:
 
 		return open(page_path, "rb").read()
 
+	def load_or_save_page(self, page_name):
+		page_data = self.load_page(page_name)
+		if not page_data:
+			try:
+				res = self.browser_open(anime_url)
+			except RuntimeError:
+				return self.handler_resource_is_unavailable()
+			page_data = res.get_data()
+			self.save_page(page_name, page_data)
+		return page_data
+
 	def get_cookie(self, url = ""):
 		url = url or self.main_url
 		opener = urllib.request.build_opener()
