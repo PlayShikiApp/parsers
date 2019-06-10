@@ -86,13 +86,13 @@ def find_all_ongoings(parsers = {"smotretanime": anime365.Anime365Parser}):
 
 			print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
 			tmp_videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])
-			for episode_num in range(max_episode + 1, shiki_ongoing_data["episodes_available"] + 1):
+			latest = 1 if parser.fetch_latest_episode else 0
+			for episode_num in range(max_episode + 1, shiki_ongoing_data["episodes_available"] + latest):
 				df = parser.get_videos_list(anime_info["anime_english"], episode_num)
 				if (isinstance(df, type(None))) or df.empty:
 					note = "no videos found"
 					print("[%d / %d] %s (%d / %d): %s" % (n, total, anime_info["anime_english"], episode_num, shiki_ongoing_data["episodes_available"], note))
 
-				
 				print("[%d / %d] %s (%d / %d)" % (n, total, anime_info["anime_english"], episode_num, shiki_ongoing_data["episodes_available"]))
 				tmp_videos_list = tmp_videos_list.append(df, ignore_index = True, sort = False)
 

@@ -21,9 +21,17 @@ class Parser:
                 "subtitles": "субтитры",
                 "raw": "оригинал"
         }
+
+	atributes = [
+		"scheme",
+		"netloc",
+		"fetch_latest_episode"
+	]
+
 	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q"):
-		if not hasattr(self, "scheme") or not hasattr(self, "netloc"):
-			raise ValueError("Derived classes must set scheme and netloc atributes before invoking parent class")
+		for a in atributes:
+			if not hasattr(self, a):
+				raise ValueError("Derived classes must set %s attribute before invoking parent class" % a)
 
 		self.url = url
 		self.main_url = main_url

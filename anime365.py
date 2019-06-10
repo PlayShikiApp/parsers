@@ -33,11 +33,12 @@ class Anime365Parser(parser.Parser):
 
 	anime365_name_chars = string.ascii_letters + string.digits + " "
 
-	def __init__(self, query_parameter = "q"):
+	def __init__(self, query_parameter = "q", fetch_latest_episode = False):
 		self.scheme = "https"
 		self.netloc = "smotret-anime-365.ru"
 		# for compatibility reasons
 		self.netloc_alias = "smotretanime.ru"
+		self.fetch_latest_episode = fetch_latest_episode
 		path = "/catalog/search"
 		url = urllib.parse.urlunparse((self.scheme, self.netloc, path, None, None, None))
 		main_url = urllib.parse.urlunparse((self.scheme, self.netloc, "", None, None, None))
