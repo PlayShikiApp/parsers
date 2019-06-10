@@ -8,5 +8,7 @@ ALIASES = {
 SKIP = [
 	"Doraemon (2005)",
 	"Chibi Maruko-chan (1995)",
-	"Gudetama"
+	"Gudetama",
+	"Sore Ike! Anpanman",
+	"Xi Yang Yang Yu Hui Tai Lang"
 ]

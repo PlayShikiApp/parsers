@@ -129,7 +129,11 @@ class Anime365Parser(parser.Parser):
 		res = dict()
 		for e in episodes:
 			url = self.build_url(path = e)
-			episode_num = e.split("/")[-1].split("-")[0]
+			episode_num = [part for part in e.split("/")[-1].split("-") if part.isdigit()]
+			if not episode_num:
+				continue
+
+			episode_num = episode_num[0]
 			if not episode_num.isdigit():
 				continue
 			episode_num = int(episode_num)

@@ -15,6 +15,13 @@ from parsers.parser import DATE_FORMAT
 ONGOING_IDS = []
 OUT_DIR = ""
 
+ANIME_TYPES = {
+	"TV Сериал":	"tv",
+	"ONA":		"ona",
+	"OVA":		"ova",
+	"Спешл":	"special"
+}
+
 def get_ongoing_id(article):
 	ongoing_url = article.find("a").get("data-tooltip_url")
 	return int(urllib.parse.urlparse(ongoing_url).path.split("/")[2].split("-")[0])
@@ -64,10 +71,13 @@ def parse_ongoing(html):
 	if "Эпизоды:" in res:
 		episodes = [i for i in res["Эпизоды:"].replace(" ", "").split("/")]
 
-		if episodes[0].isdigit():
-			res["episodes_available"] = int(episodes[0])
-		if episodes[1].isdigit():
-			res["episodes_total"] = int(episodes[1])
+		if len(episodes) > 0:
+			if episodes[0].isdigit():
+				res["episodes_available"] = int(episodes[0])
+		if len(episodes) > 1:
+			if episodes[1].isdigit():
+				res["episodes_total"] = int(episodes[1])
+
 
 	res["next_episode"] = ""
 	if "Следующий эпизод:" in res:
@@ -79,8 +89,8 @@ def parse_ongoing(html):
 
 	res["type"] = ""
 	if "Тип:" in res:
-		if res["Тип:"] == "TV Сериал":
-			res["type"] = "tv"
+		if res["Тип:"] in ANIME_TYPES:
+			res["type"] = ANIME_TYPES[res["Тип:"]]
 
 	res["date_created"] = ""
 	try:
