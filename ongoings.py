@@ -38,7 +38,8 @@ def fetch_all_ongoings(ids):
 
 @lru_cache(maxsize = None)
 def parse_ongoing(html):
-	content = BeautifulSoup(html, features="html5lib").find("div", {"class": "l-content"})
+	page = BeautifulSoup(html, features="html5lib")
+	content = page.find("div", {"class": "l-content"})
 	dateCreated = ""
 
 	entry_info = content.find("div", "b-entry-info")
@@ -78,6 +79,18 @@ def parse_ongoing(html):
 		res["date_created"] = dateCreated
 	except:
 		pass
+
+	res["anime_english"] = ""
+	res["anime_russian"] = ""
+	names = [i for i in page.find("h1").strings]
+	if len(names) == 3:
+		if names[0].endswith(" "):
+			names[0] = names[0][:-1]
+
+		if names[-1].startswith(" "):
+			names[-1] = names[-1][1:]
+
+		res["anime_russian"], res["anime_english"] = names[0], names[-1]
 
 	return res
 

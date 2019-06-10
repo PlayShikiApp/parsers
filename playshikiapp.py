@@ -58,10 +58,18 @@ def find_all_ongoings(parsers = {"smotretanime": anime365.Anime365Parser}):
 			except:
 				catch()
 				shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(id))
-				#anime_info = {}
-				note = "not found in database, skipping for now"
+				if not shiki_ongoing_data["anime_russian"] or not shiki_ongoing_data["anime_english"]:
+					note = "not found in database and couldn't retrieve anime names, skipping"
+					print("[%d / %d]: %s" % (n, total, note))
+					continue
+
+				note = "not found in database, will create first entries"
+				anime_info = {
+					"anime_english": shiki_ongoing_data["anime_english"],
+					"anime_russian": shiki_ongoing_data["anime_russian"],
+					"duration": 	 0
+				}
 				print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
-				continue
 
 			if not parser.search_anime(anime_info["anime_english"]):
 				note = "not found"
