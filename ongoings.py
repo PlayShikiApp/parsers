@@ -73,6 +73,11 @@ def parse_ongoing(html):
 		except:
 			pass
 
+	res["type"] = ""
+	if "Тип:" in res:
+		if res["Тип:"] == "TV Сериал":
+			res["type"] = "tv"
+
 	res["date_created"] = ""
 	try:
 		dateCreated = dateparser.parse(content.find("meta", {"itemprop": "dateCreated"}).get("content")).strftime(DATE_FORMAT)

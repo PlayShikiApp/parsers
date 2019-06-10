@@ -22,14 +22,14 @@ class Parser:
                 "raw": "оригинал"
         }
 
-	atributes = [
+	attributes = [
 		"scheme",
 		"netloc",
 		"fetch_latest_episode"
 	]
 
 	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q"):
-		for a in atributes:
+		for a in self.attributes:
 			if not hasattr(self, a):
 				raise ValueError("Derived classes must set %s attribute before invoking parent class" % a)
 

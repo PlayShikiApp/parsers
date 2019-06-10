@@ -55,7 +55,7 @@ class Anime365Parser(parser.Parser):
 			return "-".join(url.split("/")[-1].split("-")[:-1])
 
 
-	def search_anime(self, anime_english):
+	def search_anime(self, anime_english, type_ = ""):
 		built_url = self.build_search_url(anime_english)
 
 		page_name = "%s.html" % anime_english
@@ -82,7 +82,8 @@ class Anime365Parser(parser.Parser):
 					url = results[0].find("a").get("href")
 					url_to_name = self.to_hosting_anime_name(url = url)
 					#print(url_to_name, name)
-					found = (url_to_name == name)
+					#print("check (%s == %s) or (%s == %s)" % (url_to_name, name, url_to_name, name + "-" + type_))
+					found = (url_to_name == name) or (url_to_name == name + "-" + type_)
 					if found:
 						found_url = url
 						break
@@ -101,8 +102,8 @@ class Anime365Parser(parser.Parser):
 		return page_data
 
 	@lru_cache(maxsize = None)
-	def get_episodes_list(self, anime_english):
-		anime_page = self.search_anime(anime_english)
+	def get_episodes_list(self, anime_english, type_ = ""):
+		anime_page = self.search_anime(anime_english, type_)
 		if not anime_page:
 			return self.handler_anime_not_found(anime_english)
 
@@ -126,8 +127,8 @@ class Anime365Parser(parser.Parser):
 		return res
 
 	@lru_cache(maxsize = None)
-	def get_videos_list(self, anime_english, episode_num):
-		episodes_list = self.get_episodes_list(anime_english)
+	def get_videos_list(self, anime_english, episode_num, type_ = ""):
+		episodes_list = self.get_episodes_list(anime_english, type_)
 		if (not episodes_list) or (not episode_num in episodes_list):
 			return self.handler_epidode_not_found(anime_english, episode_num)
 

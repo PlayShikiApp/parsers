@@ -71,22 +71,30 @@ def find_all_ongoings(parsers = {"smotretanime": anime365.Anime365Parser}):
 				}
 				print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
 
-			if not parser.search_anime(anime_info["anime_english"]):
+			if not shiki_ongoing_data:
+				shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(id))
+
+			search_kwargs = {}
+			if shiki_ongoing_data["type"]:
+				#print("type: %s" % shiki_ongoing_data["type"])
+				search_kwargs["type_"] = shiki_ongoing_data["type"]
+
+			if not parser.search_anime(anime_info["anime_english"], **search_kwargs):
 				note = "not found"
 				print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
 				continue
 
 			max_episode = routes.get_max_episode_for_hosting(id, hosting)
-			if not shiki_ongoing_data:
-				shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(id))
-			if shiki_ongoing_data["episodes_available"] <= max_episode:
+
+			latest = 1 if parser.fetch_latest_episode else 0
+
+			if shiki_ongoing_data["episodes_available"] - (1 - latest) <= max_episode:
 				note = "already fetched all available episodes"
 				print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
 				continue
 
 			print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
 			tmp_videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])
-			latest = 1 if parser.fetch_latest_episode else 0
 			for episode_num in range(max_episode + 1, shiki_ongoing_data["episodes_available"] + latest):
 				df = parser.get_videos_list(anime_info["anime_english"], episode_num)
 				if (isinstance(df, type(None))) or df.empty:
