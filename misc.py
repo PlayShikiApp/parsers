@@ -10,5 +10,8 @@ SKIP = [
 	"Chibi Maruko-chan (1995)",
 	"Gudetama",
 	"Sore Ike! Anpanman",
-	"Xi Yang Yang Yu Hui Tai Lang"
+	"Xi Yang Yang Yu Hui Tai Lang",
+	"Zhu Zhu Xia: Jing Qiu Xiao Yingxiong",
+	"Xing You Ji: Fengbao Famila",
+	"Papan Ga Panda!"
 ]
