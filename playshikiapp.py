@@ -8,7 +8,7 @@ import pandas as pd
 from functools import lru_cache
 from sqlalchemy import create_engine
 
-from parsers import ongoings, anime365
+from parsers import ongoings, anime365, misc
 from parsers.tools import catch
 from shikimori import routes, models
 
@@ -70,6 +70,11 @@ def find_all_ongoings(parsers = {"smotretanime": anime365.Anime365Parser}):
 					"duration": 	 0
 				}
 				print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
+
+			if anime_info["anime_english"] in misc.SKIP:
+				note = "anime was explicitly specified to skip fetch"
+				print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
+				continue
 
 			if not shiki_ongoing_data:
 				shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(id))

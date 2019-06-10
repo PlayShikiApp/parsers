@@ -10,8 +10,9 @@ import pandas as pd
 from functools import lru_cache
 from urllib.parse import urlencode, urlparse, urlunparse, quote_plus
 from bs4 import BeautifulSoup
+from fuzzysearch import find_near_matches
 from parsers import ongoings
-from parsers import parser
+from parsers import parser, misc
 DATE_FORMAT = parser.DATE_FORMAT
 
 class Anime365Parser(parser.Parser):
@@ -78,12 +79,23 @@ class Anime365Parser(parser.Parser):
 				found = False
 				found_url = ""
 				name = self.to_hosting_anime_name(anime_english = anime_english)
+				names = [name]
+				if anime_english in misc.ALIASES:
+					for alias in misc.ALIASES[anime_english]:
+						names.append(self.to_hosting_anime_name(anime_english = alias))
+
 				for result in results:
 					url = results[0].find("a").get("href")
 					url_to_name = self.to_hosting_anime_name(url = url)
 					#print(url_to_name, name)
 					#print("check (%s == %s) or (%s == %s)" % (url_to_name, name, url_to_name, name + "-" + type_))
-					found = (url_to_name == name) or (url_to_name == name + "-" + type_)
+					for name in names:
+						found = (url_to_name == name)					or \
+							(url_to_name == name + "-" + type_)			or \
+							(find_near_matches(url_to_name, name, max_l_dist=1))
+						if found:
+							break
+
 					if found:
 						found_url = url
 						break

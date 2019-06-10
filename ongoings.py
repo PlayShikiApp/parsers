@@ -36,6 +36,9 @@ def fetch_all_ongoings(ids):
 		req = urllib.request.Request("https://shikimori.one/animes/%d" % id)
 		open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
 
+def get_ongoing_info(id):
+	return parse_ongoing(get_ongoing_html(id))
+
 @lru_cache(maxsize = None)
 def parse_ongoing(html):
 	page = BeautifulSoup(html, features="html5lib")
@@ -59,11 +62,12 @@ def parse_ongoing(html):
 
 	res["episodes_available"], res["episodes_total"] = 0, 0
 	if "Эпизоды:" in res:
-		episodes = res["Эпизоды:"]
-		try:
-			res["episodes_available"], res["episodes_total"] = [int(i) for i in episodes.replace(" ", "").split("/")]
-		except ValueError:
-			pass
+		episodes = [i for i in res["Эпизоды:"].replace(" ", "").split("/")]
+
+		if episodes[0].isdigit():
+			res["episodes_available"] = int(episodes[0])
+		if episodes[1].isdigit():
+			res["episodes_total"] = int(episodes[1])
 
 	res["next_episode"] = ""
 	if "Следующий эпизод:" in res:
