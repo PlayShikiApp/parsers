@@ -128,10 +128,10 @@ def main(root_dir = "", start = 0, num_threads = 5, use_asyncio = False):
 	ONGOING_IDS = [get_ongoing_id(a) for a in articles]
 	QUEUE_LEN = len(ONGOING_IDS)
 
+	OUT_DIR = datetime.now().strftime(DATE_FORMAT)
 	if use_asyncio:
 		ioloop = asyncio.get_event_loop()
 
-		OUT_DIR = datetime.now().strftime(DATE_FORMAT)
 		if not os.path.exists(OUT_DIR):
 			os.makedirs(OUT_DIR)
 

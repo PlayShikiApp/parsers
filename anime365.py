@@ -127,7 +127,7 @@ class Anime365Parser(parser.Parser):
 	@lru_cache(maxsize = None)
 	def get_videos_list(self, anime_english, episode_num):
 		episodes_list = self.get_episodes_list(anime_english)
-		if not episode_num in episodes_list:
+		if (not episodes_list) or (not episode_num in episodes_list):
 			return self.handler_epidode_not_found(anime_english, episode_num)
 
 		anime_url = episodes_list[episode_num]

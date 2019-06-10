@@ -16,7 +16,7 @@ DATE_FORMAT = "%d.%m.%Y"
 CACHE_DIR = "parsers_cache"
 
 class Parser:
-	to_db_kinds = {
+	to_db_kind = {
                 "fandub": "озвучка",
                 "subtitles": "субтитры",
                 "raw": "оригинал"
