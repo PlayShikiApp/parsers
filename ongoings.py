@@ -35,9 +35,6 @@ def fetch_all_ongoings(ids):
 		print("%d / %d" % (n, total))
 		out_file = os.path.join(OUT_DIR, "%d.html" % id)
 
-		if (os.stat(out_file).st_size == 0):
-			print("file %d.html is empty" % id)
-
 		if os.path.exists(out_file) and os.stat(out_file).st_size != 0:
 			continue
 		req = urllib.request.Request("https://shikimori.one/animes/%d" % id)
@@ -120,8 +117,6 @@ def get_ongoing_html(id):
 
 	out_file = os.path.join(OUT_DIR, "%d.html" % id)
 	if not os.path.exists(out_file) or os.stat(out_file).st_size == 0:
-		if (os.stat(out_file).st_size == 0):
-			print("file %d.html is empty" % id)
 		req = urllib.request.Request("https://shikimori.one/animes/%d" % id)
 		open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
 	return open(out_file, "r").read()
@@ -134,9 +129,6 @@ async def get_ongoing_html_async(id):
 
 	out_file = os.path.join(OUT_DIR, "%d.html" % id)
 	try:
-		if (os.stat(out_file).st_size == 0):
-			print("file %d.html is empty" % id)
-
 		if os.path.exists(out_file) and os.stat(out_file).st_size != 0:
 			return
 		req = urllib.request.Request("https://shikimori.one/animes/%d" % id)
