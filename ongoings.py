@@ -3,6 +3,8 @@
 
 import os
 import asyncio
+import time
+import urllib.error
 import urllib.request
 import urllib.parse
 import dateparser
@@ -11,6 +13,7 @@ from functools import lru_cache
 from datetime import datetime
 from bs4 import BeautifulSoup
 from parsers.parser import DATE_FORMAT
+from parsers.tools import catch
 
 ONGOING_IDS = []
 OUT_DIR = ""
@@ -37,8 +40,24 @@ def fetch_all_ongoings(ids):
 
 		if os.path.exists(out_file) and os.stat(out_file).st_size != 0:
 			continue
-		req = urllib.request.Request("https://shikimori.one/animes/%d" % id)
-		open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
+
+		url = "https://shikimori.one/animes/%d" % id
+		req = urllib.request.Request(url)
+		time.sleep(1.5)
+		error = True
+		retries = 5
+		for retry in range(retries):
+			#print(retry)
+			try:
+				open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
+				error = False
+				break
+			except (urllib.error.URLError, urllib.error.HTTPError) as e:
+				catch(e.reason)
+			time.sleep(5)
+		if error:
+			raise RuntimeError("Unable to open URL %s after %d retries" % (url, retries))
+
 
 def get_ongoing_info(id):
 	return parse_ongoing(get_ongoing_html(id))
