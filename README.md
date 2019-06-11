@@ -37,7 +37,7 @@ From python3 interpreter shell run (assuming you're in a toplevel directory, e.g
 ```
 
 This can take a while before all ongoings are fetched.
-At finish, this script will produce "ongoings.sql" file in the current repository. Another supported format is pkl (a raw dump of Python object to a file).
+At finish, this script will produce "ongoings.sql" file in the current directory. Another supported format is pkl (a raw dump of Python object to a file).
 
 #### Retrieve some info about an ongoing:
 ```
