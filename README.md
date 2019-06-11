@@ -3,7 +3,7 @@
 This repository is aiming to provide an automated import of anime videos for [PlayShikiServer](https://github.com/PlayShikimoriApp/PlayShikiServer) or a compatible backend server. Everything below assumes you are already familiar with some basic REST stuff and running such server.
 
 ## How exactly it's supposed to work
-This repository tracks [shikimori](shikimori.one) ongoings and tries to find anime videos on other related resources.
+This repository tracks [shikimori](https://shikimori.one) ongoings and tries to find anime videos on other related resources.
 
 ## Quick start
 #### Clone this repo
@@ -51,4 +51,4 @@ At finish, this script will produce "ongoings.sql" file in the current repositor
 ```
 
 ### Supported external sites
-For now this script only supports fetching episodes from smotret-anime-365.ru . It shouldn't be hard to add some other sites like sovetromantica.com . Some work on this already done by AltWatcher extension (which makes a GET request to the internal sites' search engines).
+For now this script only supports fetching episodes from smotret-anime-365.ru . It shouldn't be hard to add some other sites like sovetromantica.com . Some work on this already done by [AltWatcher](https://openuserjs.org/scripts/Lolec/Alt_Watcher_v3) extension (which makes a GET request to the internal sites' search engines).
