@@ -2,7 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 ALIASES = {
-	"Detective Conan": ["Meitantei Conan", "Case Closed"]
+	"Detective Conan": ["Meitantei Conan", "Case Closed"],
+	"JoJo no Kimyou na Bouken Part 5: Ougon no Kaze": ["JoJo no Kimyou na Bouken: Ougon no Kaze"]
 }
 
 SKIP = [
