@@ -46,23 +46,31 @@ class SearchResult:
 			return None
 
 		match_group = self.searchPattern.search(self.text).group()
-		return self.searchPattern.get_authors(match_group)
+		return self.searchPattern.get_authors(self.text)
 
 	def get_team(self):
 		if not self.searchPattern:
 			return None
 
 		match_group = self.searchPattern.search(self.text).group()
-		return self.searchPattern.get_team(match_group)
+		return self.searchPattern.get_team(self.text)
 
 	def get_authors(self):
 		authors = self._get_authors()
 		team = self.get_team()
 
-		if not authors or not team:
+		if not authors and not team:
 			return ""
 
-		return "{team} ({authors})".format(team = team, authors = " & ".join(authors)[:-1])
+		if not authors:
+			return team
+
+		authors = "&".join(authors)[:-1] if len(authors) > 1 else "&".join(authors)
+
+		if not team:
+			return authors
+
+		return "{team} ({authors})".format(team = team, authors = authors)
 
 	def get_quality(self):
 		if not self.searchPattern:
@@ -87,7 +95,7 @@ class SibnetParser(parser.Parser):
 
 	to_shiki_kind = {"озвучка": "fandub", "subtitles": "subtitles", "субтитры": "subtitles"}
 
-	episode_tokens = ["серия", "episode"]
+	episode_tokens = ["серия", "Серия", "Эпизод", "episode", "-"]
 
 	anime_aliases = {}
 	
@@ -118,14 +126,161 @@ class SibnetParser(parser.Parser):
 				"userlogin": ""
 		}
 
-		self.search_patterns = [SearchPattern(
-			"\[Озвучка: [\wWdDsS].*\([\wWdDsS].*\)\]",
-			get_authors = lambda s: s.split(": ")[-1].split("(")[0].split(", "),
+		self.disabled_patterns = [SearchPattern(
+			"^\[ORIENT\].*\[.*\].*$",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[ORIENT]",	
+			get_language = lambda s: "japanese",
+			get_kind = lambda s: self.to_db_kind["raw"],
+			get_quality = lambda s: s.split("]")[-2].split("[")[-1]
+		    ),
+		    SearchPattern(
+			"^\[Shinobi&Wien-Subs\].*\[.*\].*$",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[Shinobi&Wien-Subs]",	
+			get_language = lambda s: "japanese",
+			get_kind = lambda s: self.to_db_kind["raw"],
+			get_quality = lambda s: "unknown"
+		    )]
+
+		self.search_patterns = [
+		    SearchPattern(
+			"\[(Озвучка: |Озвучили:).*\(.*\)\]",
+			get_authors = lambda s: re.split(",|&", s.split(": ")[-1].split("(")[0]),
 			get_team = lambda s: s.split("(")[-1].split(")")[0],	
 			get_language = lambda s: "russian",
 			get_kind = lambda s: self.to_db_kind["fandub"],
 			get_quality = lambda s: "unknown"
-		)]
+		    ),
+		    SearchPattern(
+			".*\[AniLibria\].*",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[AniLibria]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			".*\[AniLibria_TV\].*",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[AniLibria]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			".*\[AniMedia.TV\].*",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[AniLibria]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			".*\[KANSAI STUDIO\].*",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[KANSAI STUDIO]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			".*\[Субтитры\] \[AnimeDub.ru\].*",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[AnimeDub.ru]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["subtitles"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			".*\[.*\]\[AnimeDub.ru\].*",
+			get_authors = lambda s: re.split(",|&", s.split("]")[0].split("[")[-1]),
+			get_team = lambda s: "[AnimeDub.ru]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^\[AniDub\].*\[.*\]$",
+			get_authors = lambda s: re.split(",|&", s.split("]")[-2].split("[")[-1]),
+			get_team = lambda s: "[AniDub]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^\[SS\].*\[.*\]$",
+			get_authors = lambda s: re.split(",|&", s.split("]")[-2].split("[")[-1]),
+			get_team = lambda s: "[SS]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^\[Shift\].*\[субтитры\]$",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[Shift]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["subtitles"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.*\[Anything Group]$",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[Anything Group]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["subtitles"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^\[AniMaunt\].*\|.*$",
+			get_authors = lambda s: re.split(",|&", s.split("|")[-1]),
+			get_team = lambda s: "[AniMaunt]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.*(русская озвучка youmiteru)$",
+			get_authors = lambda s: re.split(",|&", s.split("|")[-1]),
+			get_team = lambda s: "[youmiteru]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^Onibaku.*\|.*\[.*\]$",
+			get_authors = lambda s: re.split(",|&", s.split("|")[-1].split("]")[0].split("[")[-1]),
+			get_team = lambda s: "[Onibaku]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^\[Shiza Project\].*\[.*\]$",
+			get_authors = lambda s: re.split(",|&", s.split("]")[-2].split("[")[-1]),
+			get_team = lambda s: "[Shiza Project]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^\[Ohys-Raws\].*\(.*\).*$",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[Ohys-Raws]",	
+			get_language = lambda s: "japanese",
+			get_kind = lambda s: self.to_db_kind["raw"],
+			get_quality = lambda s: s.split(")")[-2].split("(")[-1]
+		    ),
+		    SearchPattern(
+			"^\[Erai-raws\].*\[.*\].*$",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[Erai-raws]",	
+			get_language = lambda s: "japanese",
+			get_kind = lambda s: self.to_db_kind["raw"],
+			get_quality = lambda s: "unknown"
+		    )
+		]
 
 		super().__init__(url = url, main_url = main_url, headers = self.headers, query_kwargs = self.query_kwargs, query_parameter = query_parameter)
 		self.setup_urlopener()
