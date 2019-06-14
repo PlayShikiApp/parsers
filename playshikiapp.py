@@ -8,7 +8,7 @@ import pandas as pd
 from functools import lru_cache
 from sqlalchemy import create_engine
 
-from parsers import ongoings, anime365, sovetromantica, misc
+from parsers import ongoings, anime365, sovetromantica, sibnet, misc
 from parsers.tools import catch
 from shikimori import routes, models
 
@@ -43,8 +43,9 @@ def save(from_pickle = False, format = "pkl"):
 		open("ongoings.sql", "wb").write("\n".join(res).encode("u8"))
 
 def find_all_ongoings(parsers = {
-			"smotretanime": anime365.Anime365Parser,
-			"sovetromantica": sovetromantica.SRParser
+			#"smotretanime": anime365.Anime365Parser,
+			#"sovetromantica": sovetromantica.SRParser
+			"sibnet": sibnet.SibnetParser
 		      }):
 	ongoings.main()
 	ongoings.ONGOING_IDS = ongoings.ONGOING_IDS

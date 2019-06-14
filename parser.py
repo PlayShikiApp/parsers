@@ -116,8 +116,8 @@ class Parser:
 			time.sleep(retry_delay)
 		raise RuntimeError("Unable to open URL %s after %d retries" % (url, retry_count))
 
-	def build_query(self, anime_english):
-		query = self.query_kwargs.copy()
+	def build_query(self, anime_english, query_kwargs = {}):
+		query = query_kwargs if query_kwargs else self.query_kwargs.copy()
 		query[self.query_parameter] = anime_english
 		return query
 
@@ -126,8 +126,8 @@ class Parser:
 		netloc = netloc or self.netloc
 		return urllib.parse.urlunparse((scheme, netloc, path, params, query, fragment))
 
-	def build_search_url(self, anime_english):
-		query = self.build_query(anime_english)
+	def build_search_url(self, anime_english, query_kwargs = {}):
+		query = self.build_query(anime_english, query_kwargs = query_kwargs)
 		built_url = urllib.parse.urlunparse((self.parsed_url.scheme, self.parsed_url.netloc, self.parsed_url.path, None, urlencode(query, quote_via = quote_plus), None))
 		return built_url
 
