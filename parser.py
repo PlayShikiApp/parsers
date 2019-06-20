@@ -28,6 +28,8 @@ class Parser:
 		"fetch_latest_episode"
 	]
 
+	page_name_escape_chars = [":", "/", "?", "*"]
+
 	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q"):
 		for a in self.attributes:
 			if not hasattr(self, a):
@@ -51,15 +53,18 @@ class Parser:
 		site = self.netloc[1:] if self.netloc.startswith("/") else self.netloc
 		return os.path.join(self.cache_root, site, page_name)
 
+	def escape_page_name(self, page_name):
+		return "".join([(i if not i in self.page_name_escape_chars else "_") for i in page_name])
+
 	def save_page(self, page_name, page_data):
-		page_path = self.get_page_path(page_name)
+		page_path = self.get_page_path(self.escape_page_name(page_name))
 		page_dirname = os.path.dirname(page_path)
 		if not os.path.isdir(page_dirname):
 			os.makedirs(page_dirname)
 		open(page_path, "wb").write(page_data)
 
 	def load_page(self, page_name):
-		page_path = self.get_page_path(page_name)
+		page_path = self.get_page_path(self.escape_page_name(page_name))
 
 		if not os.path.isfile(page_path) or os.stat(page_path).st_size == 0:
 			return b""
