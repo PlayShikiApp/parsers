@@ -43,8 +43,8 @@ def save(from_pickle = False, format = "pkl"):
 		open("ongoings.sql", "wb").write("\n".join(res).encode("u8"))
 
 def find_all_ongoings(parsers = {
-			#"smotretanime": anime365.Anime365Parser,
-			#"sovetromantica": sovetromantica.SRParser
+			"smotretanime": anime365.Anime365Parser,
+			"sovetromantica": sovetromantica.SRParser,
 			"sibnet": sibnet.SibnetParser
 		      }):
 	ongoings.main()
