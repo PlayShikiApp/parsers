@@ -65,7 +65,7 @@ class SearchResult:
 		if not authors:
 			return team
 
-		authors = "&".join(authors)[:-1] if len(authors) > 1 else "&".join(authors)
+		authors = "&".join(authors)
 
 		if not team:
 			return authors
