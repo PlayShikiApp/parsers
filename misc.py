@@ -14,5 +14,7 @@ SKIP = [
 	"Xi Yang Yang Yu Hui Tai Lang",
 	"Zhu Zhu Xia: Jing Qiu Xiao Yingxiong",
 	"Xing You Ji: Fengbao Famila",
-	"Papan Ga Panda!"
+	"Papan Ga Panda!",
+	"Crayon Shin-chan",
+	"Detective Conan"
 ]

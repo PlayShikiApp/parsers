@@ -90,6 +90,31 @@ class SearchResult:
 
 		return self.searchPattern.get_language(self.text)
 
+
+# https://codereview.stackexchange.com/questions/19627/finding-sub-list
+def find(haystack, needle):
+	"""Return the index at which the sequence needle appears in the
+	sequence haystack, or -1 if it is not found, using the Boyer-
+	Moore-Horspool algorithm. The elements of needle and haystack must
+	be hashable.
+
+	>>> find([1, 1, 2], [1, 2])
+	1
+
+	"""
+	h = len(haystack)
+	n = len(needle)
+	skip = {needle[i]: n - i - 1 for i in range(n - 1)}
+	i = n - 1
+	while i < h:
+		for j in range(n):
+			if haystack[i - j] != needle[-j - 1]:
+				i += skip.get(haystack[i], n)
+				break
+		else:
+			return i - n + 1
+	return -1
+
 class SibnetParser(parser.Parser):
 	headers = {'User-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 OPR/43.0.2442.1144'}
 
@@ -209,6 +234,62 @@ class SibnetParser(parser.Parser):
 			get_quality = lambda s: "unknown"
 		    ),
 		    SearchPattern(
+			"^.*\[Озвучка: Sergei Vasya \(AniDub\)\]$",
+			get_authors = lambda s: "Sergei Vasya",
+			get_team = lambda s: "[AniDub]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.*\[Озвучка: Zendos\(AniStar\)\]$",
+			get_authors = lambda s: "Zendos",
+			get_team = lambda s: "[AniStar]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.*русская озвучка Zendos$",
+			get_authors = lambda s: ["Zendos"],
+			get_team = lambda s: "",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.*русская озвучка Skim$",
+			get_authors = lambda s: ["Skim"],
+			get_team = lambda s: "",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.*русская озвучка Shoker$",
+			get_authors = lambda s: ["Shoker"],
+			get_team = lambda s: "",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.* - .* &.*\[(AniDub|AniLibria|Animedia|AniFilm|SHIZA Project)\]$",
+			get_authors = lambda s: re.split(",|&", " ".join(s.split("[")[0].split(" ")[3:])),
+			get_team = lambda s: "[%s]" % (s.split("]")[-2].split("[")[-1]),	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.* \/ .* \(.*\) \(Amutyan & Absurd\)$",
+			get_authors = lambda s: re.split(",|&", s.split(")")[-2].split("(")[-1]),
+			get_team = lambda s: "",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
 			"^\[SS\].*\[.*\]$",
 			get_authors = lambda s: re.split(",|&", s.split("]")[-2].split("[")[-1]),
 			get_team = lambda s: "[SS]",	
@@ -257,9 +338,97 @@ class SibnetParser(parser.Parser):
 			get_quality = lambda s: "unknown"
 		    ),
 		    SearchPattern(
-			"^\[Shiza Project\].*\[.*\]$",
+			"^\[Shiza Project\].*\[MVO\]$",
 			get_authors = lambda s: re.split(",|&", s.split("]")[-2].split("[")[-1]),
 			get_team = lambda s: "[Shiza Project]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^\[Shiza Project\].*\[Subs\]$",
+			get_authors = lambda s: re.split(",|&", s.split("]")[-2].split("[")[-1]),
+			get_team = lambda s: "[Shiza Project]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["subtitles"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.*-.*\/.* \(.*,.*\) \| AniFilm$",
+			get_authors = lambda s: re.split(",|&", s.split("|")[0].split(")")[0].split("(")[-1]),
+			get_team = lambda s: "[AniFilm]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^\[OldFQ\].*\[Kallaider\]$",
+			get_authors = lambda s: ["Kallaider"],
+			get_team = lambda s: "[OldFQ]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.*\[J&N union\]$",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[J&N union]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^\[TAKEOVER\].\[.*\].*$",
+			get_authors = lambda s: re.split(",|&", s.split("]")[-2].split("[")[-1]),
+			get_team = lambda s: "[TAKEOVER]",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: s.split("[")[-1].split("]")[0],
+		    ),
+		    SearchPattern(
+			"^.*\[Persona99.*\].*$",
+			get_authors = lambda s: ["Persona99"],
+			get_team = lambda s: "",	
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.*русская озвучка OVERLORDS.*[http://AniStar.ru].*$",
+			get_authors = lambda s: ["OVERLORDS"],
+			get_team = lambda s: "[AniStar]",
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.* \(Озвучка\) \[AniStar\]$",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[AniStar]",
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^.*\[RainDeath\].*$",
+			get_authors = lambda s: "RainDeath",
+			get_team = lambda s: "",
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+			"^\[AniRise\] \(.*\/.*Озвучка\) [Shoker].*)$",
+			get_authors = lambda s: "Shoker",
+			get_team = lambda s: "[AniRise]",
+			get_language = lambda s: "russian",
+			get_kind = lambda s: self.to_db_kind["fandub"],
+			get_quality = lambda s: "unknown"
+		    ),
+		    SearchPattern(
+		        "^.*\[Nazel\]$",
+		        get_authors = lambda s: "Nazel",
+			get_team = lambda s: "",
 			get_language = lambda s: "russian",
 			get_kind = lambda s: self.to_db_kind["fandub"],
 			get_quality = lambda s: "unknown"
@@ -271,6 +440,30 @@ class SibnetParser(parser.Parser):
 			get_language = lambda s: "japanese",
 			get_kind = lambda s: self.to_db_kind["raw"],
 			get_quality = lambda s: s.split(")")[-2].split("(")[-1]
+		    ),
+		    SearchPattern(
+			"^\[MiracleSubs\].*\[.*\].*$",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[MiracleSubs]",	
+			get_language = lambda s: "japanese",
+			get_kind = lambda s: self.to_db_kind["raw"],
+			get_quality = lambda s: s.split("]")[-2].split("[")[-1]
+		    ),
+		    SearchPattern(
+			"^\[PuzzleSubs\].*\[.*\].*$",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[PuzzleSubs]",	
+			get_language = lambda s: "japanese",
+			get_kind = lambda s: self.to_db_kind["raw"],
+			get_quality = lambda s: s.split("]")[-2].split("[")[-1]
+		    ),
+		    SearchPattern(
+			"^\[NextFansub\].*\[.*\].*$",
+			get_authors = lambda s: "",
+			get_team = lambda s: "[PuzzleSubs]",	
+			get_language = lambda s: "japanese",
+			get_kind = lambda s: self.to_db_kind["raw"],
+			get_quality = lambda s: s.split("]")[-2].split("[")[-1]
 		    ),
 		    SearchPattern(
 			"^\[Erai-raws\].*\[.*\].*$",
@@ -336,8 +529,9 @@ class SibnetParser(parser.Parser):
 		results_len = int(search_tit[1])
 		return results_len
 
-	def get_episode_num(self, search_result):
+	def get_episode_num(self, search_result, anime_english):
 		tokens = [t for t in search_result.split(" ") if t]
+		anime_english_tokens = [t for t in anime_english.split(" ") if t]
 
 		episode_token_idx = -1
 		episode_token_name = ""
@@ -348,25 +542,24 @@ class SibnetParser(parser.Parser):
 				break
 
 		if episode_token_idx < 0:
-			return None
+			episode_token_idx = find(tokens, anime_english_tokens)
+			if episode_token_idx < 0:
+				return None
+
+			episode_token_idx += len(anime_english_tokens) - 1
 
 		episode_num = None
-		try:
-			#print("idx = %d (%s), tokens: %s" % (episode_token_idx, tokens[episode_token_idx], str(tokens)))
+		if episode_token_idx > 0:
 			if tokens[episode_token_idx - 1].isdigit():
 				episode_num = int(tokens[episode_token_idx - 1])
 
+		if len(tokens) > episode_token_idx + 1:
 			if tokens[episode_token_idx + 1].isdigit():
 				episode_num = int(tokens[episode_token_idx + 1])
 
-		except IndexError:
-			tools.catch()
-			pass
-
-
 		return episode_num
 
-	def parse_results_page(self, anime_page):
+	def parse_results_page(self, anime_page, anime_english):
 		try:
 			entries = anime_page.find("table", {"class": "video_lst_v"}).find_all("table", {"class": "video_cell"})
 		except:
@@ -378,7 +571,7 @@ class SibnetParser(parser.Parser):
 		for e in entries:
 			try:
 				url = e.find("div", {"class": "search_name"}).find("a")
-				episode_num = self.get_episode_num(url.text)
+				episode_num = self.get_episode_num(url.text, anime_english)
 
 				print(url.text)
 				if not episode_num:
@@ -414,7 +607,7 @@ class SibnetParser(parser.Parser):
 			page_name = os.path.join(anime_english, "%d.html" % page_idx)
 			anime_page = BeautifulSoup(self.load_or_save_page(page_name, next_page_url), features = "html5lib")
 
-			results = self.parse_results_page(anime_page)
+			results = self.parse_results_page(anime_page, anime_english)
 			print(results)
 			videos = self.merge_results(videos, results)
 
