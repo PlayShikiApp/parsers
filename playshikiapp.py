@@ -24,9 +24,9 @@ def import_to_db(from_pickle = False):
 	result["id"] = range(index + 1, index + len(result)  + 1)
 	result.to_sql(name='anime_videos', con=engine, if_exists = 'append', index=False)
 
-def save(from_pickle = False, format = "pkl"):
+def save(pd_dataframe, from_pickle = False, format = "pkl"):
 	if not from_pickle:
-		result = find_all_ongoings()
+		result = pd_dataframe
 	else:
 		result = pickle.load(open("ongoings.pkl", "rb"))
 
