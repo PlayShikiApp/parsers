@@ -7,7 +7,7 @@ import urllib.request
 import mechanize
 import pandas as pd
 
-from functools import lru_cache
+from percache import Cache
 from urllib.parse import urlencode, urlparse, urlunparse, quote_plus
 from bs4 import BeautifulSoup
 from fuzzysearch import find_near_matches
@@ -74,7 +74,7 @@ class SRParser(parser.Parser):
 
 		return page_data
 
-	@lru_cache(maxsize = None)
+	@Cache(prefix="SRParser")
 	def get_videos_list(self, anime_english, episode_num, type_ = ""):
 		episodes = []
 		anime_page = self.search_anime(anime_english, type_)

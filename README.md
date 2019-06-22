@@ -16,6 +16,7 @@ git clone https://github.com/PlayShikimoriApp/parsers
 ```
 cd parsers
 pip3 install -r requirements.txt
+pip3 install git+https://github.com/ChronoMonochrome/percache
 cd ..
 ```
 

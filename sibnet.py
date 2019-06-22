@@ -9,7 +9,7 @@ import mechanize
 import pandas as pd
 import re
 
-from functools import lru_cache
+from percache import Cache
 from urllib.parse import urlencode, urlparse, urlunparse, quote_plus
 from bs4 import BeautifulSoup
 from fuzzysearch import find_near_matches
@@ -596,7 +596,7 @@ class SibnetParser(parser.Parser):
 
 		return res1
 
-	@lru_cache(maxsize = None)
+	@Cache(prefix="SibnetParser")
 	def get_parsed_results(self, anime_english, pages_total):
 		query_kwargs = self.query_kwargs.copy()
 		videos = {}
@@ -613,7 +613,7 @@ class SibnetParser(parser.Parser):
 
 		return videos
 
-	@lru_cache(maxsize = None)
+	@Cache(prefix="SibnetParser")
 	def get_videos_list(self, anime_english, episode_num, type_ = ""):
 		anime_page = BeautifulSoup(self.search_anime(anime_english, type_), features = "html5lib")
 		if not anime_page:
