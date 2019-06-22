@@ -5,6 +5,7 @@ import sys
 import pickle
 import pandas as pd
 
+from collections import OrderedDict
 from functools import lru_cache
 from sqlalchemy import create_engine
 
@@ -42,11 +43,11 @@ def save(pd_dataframe, from_pickle = False, format = "pkl"):
 		res[-1] = res[-1][:-1] + ";"
 		open("ongoings.sql", "wb").write("\n".join(res).encode("u8"))
 
-def find_all_ongoings(parsers = {
-			"smotretanime": anime365.Anime365Parser,
-			"sovetromantica": sovetromantica.SRParser,
-			"sibnet": sibnet.SibnetParser
-		      },
+def find_all_ongoings(parsers = OrderedDict([
+			("smotretanime", anime365.Anime365Parser),
+			("sovetromantica", sovetromantica.SRParser),
+			("sibnet", sibnet.SibnetParser)
+		      ]),
 		      fetch_all_episodes = False,
 		      filter_by_unique_url = False):
 	ongoings.main()
