@@ -46,7 +46,9 @@ def find_all_ongoings(parsers = {
 			"smotretanime": anime365.Anime365Parser,
 			"sovetromantica": sovetromantica.SRParser,
 			"sibnet": sibnet.SibnetParser
-		      }):
+		      },
+		      fetch_all_episodes = False,
+		      filter_by_unique_url = False):
 	ongoings.main()
 	ongoings.ONGOING_IDS = ongoings.ONGOING_IDS
 
@@ -94,18 +96,26 @@ def find_all_ongoings(parsers = {
 				print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
 				continue
 
-			max_episode = routes.get_max_episode_for_hosting(id, hosting)
 
-			latest = 1 if parser.fetch_latest_episode else 0
+			if not fetch_all_episodes:
+				max_episode = routes.get_max_episode_for_hosting(id, hosting)
 
-			if shiki_ongoing_data["episodes_available"] - (1 - latest) <= max_episode:
-				note = "already fetched all available episodes"
-				print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
-				continue
+				latest = 1 if parser.fetch_latest_episode else 0
+
+				if shiki_ongoing_data["episodes_available"] - (1 - latest) <= max_episode:
+					note = "already fetched all available episodes"
+					print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
+					continue
+
+				episode_from = max_episode + 1
+				episode_to = shiki_ongoing_data["episodes_available"] + latest
+			else:
+				episode_from = 1
+				episode_to = shiki_ongoing_data["episodes_available"]
 
 			print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
 			tmp_videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])
-			for episode_num in range(max_episode + 1, shiki_ongoing_data["episodes_available"] + latest):
+			for episode_num in range(episode_from, episode_to):
 				df = parser.get_videos_list(anime_info["anime_english"], episode_num)
 				if (isinstance(df, type(None))) or df.empty:
 					note = "no videos found"
@@ -120,5 +130,9 @@ def find_all_ongoings(parsers = {
 			tmp_videos_list["watches_count"] = "0"
 			tmp_videos_list["uploader"] = "importbot"
 			del tmp_videos_list["video_hosting"]
+			if filter_by_unique_url:
+				ongoing_all_videos = [o.url for o in models.AnimeVideo.query.filter(models.AnimeVideo.anime_id == id).all()]
+				tmp_videos_list = tmp_videos_list[~tmp_videos_list.url.isin(ongoing_all_videos)]
+			
 			result = result.append(tmp_videos_list, ignore_index = True, sort = False)
 	return result
