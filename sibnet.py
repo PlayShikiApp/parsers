@@ -418,7 +418,7 @@ class SibnetParser(parser.Parser):
 			get_quality = lambda s: "unknown"
 		    ),
 		    SearchPattern(
-			"^\[AniRise\] \(.*\/.*Озвучка\) [Shoker].*)$",
+			"^\[AniRise\] \(.*\/.*Озвучка\) [Shoker].*\)$",
 			get_authors = lambda s: "Shoker",
 			get_team = lambda s: "[AniRise]",
 			get_language = lambda s: "russian",
