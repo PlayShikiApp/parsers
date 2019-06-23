@@ -364,7 +364,7 @@ class SibnetParser(parser.Parser):
 		    SearchPattern(
 			"^\[OldFQ\].*\[Kallaider\]$",
 			get_authors = lambda s: ["Kallaider"],
-			get_team = lambda s: "[OldFQ]",	
+			get_team = lambda s: "[OldFQ]",
 			get_language = lambda s: "russian",
 			get_kind = lambda s: self.to_db_kind["fandub"],
 			get_quality = lambda s: "unknown"
@@ -380,7 +380,7 @@ class SibnetParser(parser.Parser):
 		    SearchPattern(
 			"^\[TAKEOVER\].\[.*\].*$",
 			get_authors = lambda s: re.split(",|&", s.split("]")[-2].split("[")[-1]),
-			get_team = lambda s: "[TAKEOVER]",	
+			get_team = lambda s: "[TAKEOVER]",
 			get_language = lambda s: "russian",
 			get_kind = lambda s: self.to_db_kind["fandub"],
 			get_quality = lambda s: s.split("[")[-1].split("]")[0],
@@ -388,7 +388,7 @@ class SibnetParser(parser.Parser):
 		    SearchPattern(
 			"^.*\[Persona99.*\].*$",
 			get_authors = lambda s: ["Persona99"],
-			get_team = lambda s: "",	
+			get_team = lambda s: "",
 			get_language = lambda s: "russian",
 			get_kind = lambda s: self.to_db_kind["fandub"],
 			get_quality = lambda s: "unknown"
@@ -411,7 +411,7 @@ class SibnetParser(parser.Parser):
 		    ),
 		    SearchPattern(
 			"^.*\[RainDeath\].*$",
-			get_authors = lambda s: "RainDeath",
+			get_authors = lambda s: ["RainDeath"],
 			get_team = lambda s: "",
 			get_language = lambda s: "russian",
 			get_kind = lambda s: self.to_db_kind["fandub"],
@@ -419,7 +419,7 @@ class SibnetParser(parser.Parser):
 		    ),
 		    SearchPattern(
 			"^\[AniRise\] \(.*\/.*Озвучка\) [Shoker].*\)$",
-			get_authors = lambda s: "Shoker",
+			get_authors = lambda s: ["Shoker"],
 			get_team = lambda s: "[AniRise]",
 			get_language = lambda s: "russian",
 			get_kind = lambda s: self.to_db_kind["fandub"],
@@ -427,7 +427,7 @@ class SibnetParser(parser.Parser):
 		    ),
 		    SearchPattern(
 		        "^.*\[Nazel\]$",
-		        get_authors = lambda s: "Nazel",
+		        get_authors = lambda s: ["Nazel"],
 			get_team = lambda s: "",
 			get_language = lambda s: "russian",
 			get_kind = lambda s: self.to_db_kind["fandub"],

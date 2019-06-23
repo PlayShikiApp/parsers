@@ -112,7 +112,7 @@ def find_all_ongoings(parsers = OrderedDict([
 				episode_to = shiki_ongoing_data["episodes_available"] + latest
 			else:
 				episode_from = 1
-				episode_to = shiki_ongoing_data["episodes_available"]
+				episode_to = shiki_ongoing_data["episodes_available"] + 1
 
 			print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
 			tmp_videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])

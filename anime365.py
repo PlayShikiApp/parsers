@@ -115,7 +115,7 @@ class Anime365Parser(parser.Parser):
 
 	@Cache(prefix="Anime365Parser")
 	def get_episodes_list(self, anime_english, type_ = ""):
-		print("[start] get_episodes_list: " + anime_english + ", " + type_)
+		#print("[start] get_episodes_list: " + anime_english + ", " + type_)
 		anime_page = self.search_anime(anime_english, type_)
 		if not anime_page:
 			return self.handler_anime_not_found(anime_english)
@@ -141,12 +141,12 @@ class Anime365Parser(parser.Parser):
 
 			res[episode_num] = url
 
-		print("[end] get_episodes_list")
+		#print("[end] get_episodes_list")
 		return res
 
 	@Cache(prefix="Anime365Parser")
 	def get_videos_list(self, anime_english, episode_num, type_ = ""):
-		print("[start] get_videos_list: " + anime_english + ", " + str(episode_num) + ", "+ type_)
+		#print("[start] get_videos_list: " + anime_english + ", " + str(episode_num) + ", "+ type_)
 		episodes_list = self.get_episodes_list(anime_english, type_)
 		if (not episodes_list) or (not episode_num in episodes_list):
 			return self.handler_epidode_not_found(anime_english, episode_num)
@@ -189,5 +189,5 @@ class Anime365Parser(parser.Parser):
 							    "language": self.language_by_kind[kind],
 							    "kind": self.to_db_kind[shiki_kind]
 							   }, ignore_index = True)
-		print("[end] get_videos_list")
+		#print("[end] get_videos_list")
 		return videos_list
