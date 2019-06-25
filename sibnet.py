@@ -484,8 +484,6 @@ class SibnetParser(parser.Parser):
 		if anime_english in misc.ALIASES:
 			names += misc.ALIASES[anime_english]
 
-		built_url = self.build_search_url(anime_english)
-
 		found = False
 		for anime_name in names:
 			page_name = "%s.html" % anime_name
@@ -494,6 +492,7 @@ class SibnetParser(parser.Parser):
 			print(names)
 			if not page_data:
 				try:
+					built_url = self.build_search_url(anime_name)
 					res = self.browser_open(built_url)
 				except RuntimeError:
 					tools.catch()

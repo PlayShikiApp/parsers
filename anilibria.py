@@ -40,14 +40,15 @@ class AnilibriaParser(parser.Parser):
 		if anime_english in misc.ALIASES:
 			names += misc.ALIASES[anime_english]
 
-		built_url, query_kwargs = self.build_search_url(anime_english, method = "POST")
-
 		found = False
 		for anime_name in names:
 			page_name = "%s.html" % anime_name
 			page_data = self.load_page(page_name)
+			#print(anime_name)
 			if not page_data:
+				#print("!page_data")
 				try:
+					built_url, query_kwargs = self.build_search_url(anime_name, method = "POST")
 					res = self.browser_open(built_url, method = "POST", data = query_kwargs)
 				except RuntimeError:
 					tools.catch()
@@ -55,6 +56,8 @@ class AnilibriaParser(parser.Parser):
 				resp = res.read()
 
 				if not resp:
+					self.save_page(page_name, b"")
+					#print("!resp")
 					continue
 
 				try:
@@ -64,15 +67,18 @@ class AnilibriaParser(parser.Parser):
 					continue
 
 				if not "err" in resp or not "mes" in resp or resp["err"] != "ok":
+					print("resp is not ok")
 					continue
 
 				resp_data = resp["mes"]
 				if not resp_data:
+					print("!resp_data")
 					continue
 
 				resp_data = BeautifulSoup(resp_data, features = "html5lib")
 				anime_page_url = resp_data.find("a")
 				if not anime_page_url:
+					print("!anime_page_url")
 					continue
 
 				anime_page_url = anime_page_url.get("href")
