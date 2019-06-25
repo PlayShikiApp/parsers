@@ -16,5 +16,6 @@ SKIP = [
 	"Xing You Ji: Fengbao Famila",
 	"Papan Ga Panda!",
 	"Crayon Shin-chan",
-	"Detective Conan"
+	"Detective Conan",
+	"Sazae-san"
 ]
