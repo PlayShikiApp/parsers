@@ -168,7 +168,7 @@ class AnilibriaParser(parser.Parser):
 			"author": authors,
 			"quality": quality,
 			"language": "russian",
-			"kind": "fandub"
+			"kind": self.to_db_kind["fandub"]
 		}, ignore_index = True)
 
 		return videos_list
