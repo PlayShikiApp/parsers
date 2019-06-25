@@ -110,11 +110,21 @@ class Parser:
 		#if cookie:
 		#	self.set_cookie(cookie)
 
-	def browser_open(self, url, retry_count = 5, retry_delay = 5):
+	def handle_method(self, url, method, data):
+		if (method == "GET"):
+			return self.browser.open(url)
+		if (method == "POST"):
+			#request = mechanize.Request(url)
+			#return mechanize.urlopen(request, data = bytes(urllib.parse.urlencode(data).encode()))
+			req = urllib.request.Request(url)
+			data = urllib.parse.urlencode(data).encode("u8")
+			return urllib.request.urlopen(req, data = data)
+
+	def browser_open(self, url, method = "GET", data = {}, retry_count = 5, retry_delay = 5):
 		error_reason = ""
 		for retry in range(retry_count):
 			try:
-				return self.browser.open(url)
+				return self.handle_method(url, method, data)
 			except urllib.error.URLError as e:
 				error_reason = e.reason
 				catch(error_reason)
@@ -131,13 +141,20 @@ class Parser:
 		netloc = netloc or self.netloc
 		return urllib.parse.urlunparse((scheme, netloc, path, params, query, fragment))
 
-	def build_search_url(self, anime_english, query_kwargs = {}):
-		query = self.build_query(anime_english, query_kwargs = query_kwargs)
-		built_url = urllib.parse.urlunparse((self.parsed_url.scheme, self.parsed_url.netloc, self.parsed_url.path, None, urlencode(query, quote_via = quote_plus), None))
-		return built_url
+	def build_search_url(self, anime_english, query_kwargs = {}, method = "GET"):
+		query_kwargs = self.build_query(anime_english, query_kwargs = query_kwargs)
+		if method == "GET":
+			built_url = urllib.parse.urlunparse((self.parsed_url.scheme, self.parsed_url.netloc, self.parsed_url.path, None, urlencode(query_kwargs, quote_via = quote_plus), None))
+			return built_url
+		if method == "POST":
+			return urllib.parse.urlunparse((self.parsed_url.scheme, self.parsed_url.netloc, self.parsed_url.path, None, None, None)), query_kwargs
 
 	def handler_anime_not_found(self, anime_english):
 		print("Warning: anime \"%s\" was not found" % anime_english)
+		return None
+
+	def handler_authors_not_found(self, anime_english):
+		print("Warning: couldn't determine authors (anime: \"%s\")" % anime_english)
 		return None
 
 	def handler_episodes_list_not_found(self, anime_english):
