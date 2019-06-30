@@ -34,7 +34,7 @@ In order not to hurt anyone, this repo tries to minimize amount of requests to t
 From python3 interpreter shell run (assuming you're in a toplevel directory, e.g. PlayShikiServer):
 ```
 >>> from parsers import playshikiapp
->>> playshikiapp.save(playshikiapp.find_all_ongoings(), format = "sql")
+>>> playshikiapp.save(playshikiapp.find_animes(), format = "sql")
 ```
 
 This can take a while before all ongoings are fetched.
