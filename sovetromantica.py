@@ -39,7 +39,7 @@ class SRParser(parser.Parser):
 		super().__init__(url = url, main_url = main_url, headers = self.headers, query_kwargs = query_kwargs, query_parameter = query_parameter)
 		self.setup_urlopener()
 
-	def search_anime(self, anime_english, type_ = ""):
+	def search_anime(self, anime_english, anime_aliases = [], type_ = ""):
 		names = [anime_english]
 
 		if anime_english in misc.ALIASES:

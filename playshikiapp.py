@@ -52,7 +52,7 @@ def find_animes(parsers = OrderedDict([
 		      anime_ids = [],
 		      fetch_only_ongoings = True,
 		      fetch_all_episodes = False,
-		      filter_by_unique_url = False):
+		      filter_by_unique_url = True):
 
 	ongoings.main()
 	if fetch_only_ongoings:

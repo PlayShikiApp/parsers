@@ -34,7 +34,7 @@ class Anime365Parser(parser.Parser):
 
 	anime365_name_chars = string.ascii_letters + string.digits + " "
 
-	def __init__(self, query_parameter = "q", fetch_latest_episode = False):
+	def __init__(self, query_parameter = "q", fetch_latest_episode = True):
 		self.scheme = "https"
 		self.netloc = "smotret-anime-365.ru"
 		# for compatibility reasons
@@ -56,7 +56,7 @@ class Anime365Parser(parser.Parser):
 			return "-".join(url.split("/")[-1].split("-")[:-1])
 
 
-	def search_anime(self, anime_english, type_ = ""):
+	def search_anime(self, anime_english, anime_aliases = [], type_ = ""):
 		built_url = self.build_search_url(anime_english)
 
 		page_name = "%s.html" % anime_english
