@@ -52,7 +52,8 @@ def find_animes(parsers = OrderedDict([
 		      anime_ids = [],
 		      fetch_only_ongoings = True,
 		      fetch_all_episodes = False,
-		      filter_by_unique_url = True):
+		      filter_by_unique_url = True,
+		      use_anime_aliases = True):
 
 	ongoings.main()
 	if fetch_only_ongoings:
@@ -105,6 +106,9 @@ def find_animes(parsers = OrderedDict([
 				if shiki_ongoing_data["type"]:
 					#print("type: %s" % shiki_ongoing_data["type"])
 					search_kwargs["type_"] = shiki_ongoing_data["type"]
+
+			if use_anime_aliases:
+				search_kwargs["anime_aliases"] = [anime_info["anime_russian"]]
 
 			if not parser.search_anime(anime_info["anime_english"], **search_kwargs):
 				note = "not found"

@@ -34,6 +34,18 @@ class AnilibriaParser(parser.Parser):
 		super().__init__(url = url, main_url = main_url, headers = self.headers, query_kwargs = query_kwargs, query_parameter = query_parameter)
 		self.setup_urlopener()
 
+	def _find_best_match(self, resp, anime_names):
+		page = BeautifulSoup(resp, features = "html5lib")
+		urls = page.find_all("a")
+		if not urls:
+			return
+
+		results = {a.find("span").text: a.get("href") for a in urls}
+
+		for name in anime_names:
+			if name in results:
+				return results[name]
+
 	def search_anime(self, anime_english, anime_aliases = [], type_ = ""):
 		names = [anime_english]
 
@@ -75,13 +87,10 @@ class AnilibriaParser(parser.Parser):
 					print("!resp_data")
 					continue
 
-				resp_data = BeautifulSoup(resp_data, features = "html5lib")
-				anime_page_url = resp_data.find("a")
+				anime_page_url = self._find_best_match(resp_data, anime_names = anime_aliases)
 				if not anime_page_url:
 					print("!anime_page_url")
 					continue
-
-				anime_page_url = anime_page_url.get("href")
 				try:
 					res = self.browser_open(self.build_url(path = anime_page_url))
 				except RuntimeError:
