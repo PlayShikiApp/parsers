@@ -3,7 +3,8 @@
 
 ALIASES = {
 	"Detective Conan": ["Meitantei Conan", "Case Closed"],
-	"JoJo no Kimyou na Bouken Part 5: Ougon no Kaze": ["JoJo no Kimyou na Bouken: Ougon no Kaze"]
+	"JoJo no Kimyou na Bouken Part 5: Ougon no Kaze": ["JoJo no Kimyou na Bouken: Ougon no Kaze"],
+	"Mangaka-san to Assistant-san to The Animation": ["Mangaka to assistant"]
 }
 
 FORCE_ALIASES = {

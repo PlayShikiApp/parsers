@@ -74,7 +74,7 @@ def find_animes(parsers = OrderedDict([
 			except:
 				if not fetch_only_ongoings:
 					note = "not found"
-					print("[%d / %d]: %s: %s" % (n, total, anime_info["anime_english"], note))
+					print("[%d / %d]: %s" % (n, total, note))
 					continue
 				catch()
 				shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(id))
