@@ -164,11 +164,17 @@ async def coro(start, num_threads = 5):
 
 def main(root_dir = "", start = 0, num_threads = 5, use_asyncio = False):
 	global ONGOING_IDS, QUEUE_LEN, OUT_DIR
+
 	if root_dir:
 		os.chdir(root_dir)
-	soup = BeautifulSoup(open("ongoings_07.06.2019.html", "r").read(), features="html5lib")
-	articles = soup.find_all("article")
-	ONGOING_IDS = [get_ongoing_id(a) for a in articles]
+
+	ONGOING_IDS = []
+	for page_file in os.listdir("ongoings"):
+		soup = BeautifulSoup(open(os.path.join("ongoings", page_file), "r").read(), features="html5lib")
+		articles = soup.find_all("article")
+		ONGOING_IDS += [get_ongoing_id(a) for a in articles]
+
+	ONGOING_IDS = list(set(ONGOING_IDS))
 	QUEUE_LEN = len(ONGOING_IDS)
 
 	OUT_DIR = datetime.now().strftime(DATE_FORMAT)

@@ -20,9 +20,10 @@ pip3 install git+https://github.com/ChronoMonochrome/percache
 cd ..
 ```
 
-For now parsers use a hardcoded page (TODO: fix this) containing ongoings:
+Parsers use hardcoded pages containing ongoings:
 ```
-cp ongoings_07.06.2019.html ..
+mkdir -p ../ongoings
+cp ongoings_07.06.2019.html ../ongoings/
 ```
 
 Above is the sample page for this guide.
