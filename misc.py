@@ -32,5 +32,11 @@ SKIP = [
 	"Papan Ga Panda!",
 	"Crayon Shin-chan",
 	"Detective Conan",
-	"Sazae-san"
+	"Sazae-san",
+	"Nintama Rantarou"
+]
+
+MANUALLY_TRACKED_IDS = [
+	39456,
+	39198
 ]
