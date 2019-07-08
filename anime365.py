@@ -178,9 +178,12 @@ class Anime365Parser(parser.Parser):
 					pass
 
 				content = BeautifulSoup(page_data, features = "html5lib")
-				list_by_kind = [(url_to_embed(url = a.get("href")), a.text) for a in content.find("div", {"class": "m-select-translation-list"}).find_all("a", {"class": "truncate"})]
 				#print(videos_list)
-				for a in content.find("div", {"class": "m-select-translation-list"}).find_all("a", {"class": "truncate"}):
+				translations_list = content.find("div", {"class": "m-select-translation-list"})
+				if not translations_list:
+					continue
+
+				for a in translations_list.find_all("a", {"class": "truncate"}):
 					videos_list = videos_list.append({"url": url_to_embed(a.get("href")),
 							    "episode": str(episode_num),
 							    "video_hosting": self.netloc_alias,
