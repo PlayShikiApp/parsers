@@ -40,10 +40,12 @@ class AnilibriaParser(parser.Parser):
 		if not urls:
 			return
 
-		results = {a.find("span").text: a.get("href") for a in urls}
+		results = {a.find("span").text.upper(): a.get("href") for a in urls}
 
 		for name in anime_names:
-			if name in results:
+			name = name.upper()
+			#print("_find_best_match: result: %s, name: %s" % (str(results), name))
+			if name.upper() in results:
 				return results[name]
 
 	def search_anime(self, anime_english, anime_aliases = [], type_ = ""):
@@ -56,7 +58,7 @@ class AnilibriaParser(parser.Parser):
 		for anime_name in names:
 			page_name = "%s.html" % anime_name
 			page_data = self.load_page(page_name)
-			#print(anime_name)
+			print(anime_name)
 			if not page_data:
 				#print("!page_data")
 				try:
