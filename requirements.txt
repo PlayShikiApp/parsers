@@ -4,3 +4,5 @@ html5lib==1.0.1
 mechanize==0.4.2
 pandas==0.24.2
 fuzzysearch==0.6.2
+fuzzywuzzy==0.17.0
+python-Levenshtein==0.12.0

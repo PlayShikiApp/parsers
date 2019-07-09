@@ -11,7 +11,7 @@ import demjson
 from percache import Cache
 from urllib.parse import urlencode, urlparse, urlunparse, quote_plus
 from bs4 import BeautifulSoup
-from fuzzysearch import find_near_matches
+from fuzzywuzzy import fuzz
 from parsers import ongoings
 from parsers import parser, misc, tools
 DATE_FORMAT = parser.DATE_FORMAT
@@ -40,14 +40,23 @@ class AnilibriaParser(parser.Parser):
 		if not urls:
 			return
 
-		results = {a.find("span").text.upper(): a.get("href") for a in urls}
+		results = {a.find("span").text: a.get("href") for a in urls}
+		print(results)
+		best_score = 0
+		best_result = None
 
 		for name in anime_names:
-			name = name.upper()
+			name = name
 			#print("_find_best_match: result: %s, name: %s" % (str(results), name))
-			if name.upper() in results:
-				return results[name]
 
+			for k, v in results.items():
+				score = fuzz.ratio(name, k)
+				if score > best_score:
+					best_score = score
+					best_result = v
+					#print(best_score, best_result)
+
+		return best_result
 	def search_anime(self, anime_english, anime_aliases = [], type_ = ""):
 		names = [anime_english]
 
@@ -60,7 +69,7 @@ class AnilibriaParser(parser.Parser):
 			page_data = self.load_page(page_name)
 			print(anime_name)
 			if not page_data:
-				#print("!page_data")
+				print("!page_data")
 				try:
 					built_url, query_kwargs = self.build_search_url(anime_name, method = "POST")
 					res = self.browser_open(built_url, method = "POST", data = query_kwargs)
@@ -71,7 +80,7 @@ class AnilibriaParser(parser.Parser):
 
 				if not resp:
 					self.save_page(page_name, b"")
-					#print("!resp")
+					print("!resp")
 					continue
 
 				try:
@@ -94,6 +103,7 @@ class AnilibriaParser(parser.Parser):
 					print("!anime_page_url")
 					continue
 				try:
+					#print(anime_page_url)
 					res = self.browser_open(self.build_url(path = anime_page_url))
 				except RuntimeError:
 					tools.catch()
