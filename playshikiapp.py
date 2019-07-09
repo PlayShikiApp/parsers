@@ -55,11 +55,12 @@ def find_animes(parsers = OrderedDict([
 		      filter_by_unique_url = True,
 		      use_anime_aliases = True):
 
-	ongoings.main()
-	if fetch_only_ongoings:
-		anime_ids = ongoings.ONGOING_IDS
-	else:
-		anime_ids = [i for i in anime_ids if not i in ongoings.ONGOING_IDS]
+	if not anime_ids:
+		ongoings.main()
+		if fetch_only_ongoings:
+			anime_ids = ongoings.ONGOING_IDS
+		else:
+			anime_ids = [i for i in anime_ids if not i in ongoings.ONGOING_IDS]
 
 	result = pd.DataFrame(columns = ["anime_id", "anime_english", "anime_russian", "watches_count", "uploader", "url", "episode", "kind", "quality", "language", "author"])
 	for hosting, Parser in parsers.items():
