@@ -15,9 +15,18 @@ FORCE_ALIASES = {
 		"Gintama.": "", # Gintama 5
 		"Gintama": "", # Gintama
 		"Code Geass: Hangyaku no Lelouch R2": "Код Гиасс: Восстание Лелуша R2", # Code Geass: Hangyaku no Lelouch R2
-		"One Punch Man": "https://www.anilibria.tv/release/one-punch-man.html",
+		"One Punch Man": "Ванпанчмен",
 		"Monster": "",
-		"Natsume Yuujinchou Go": "" 
+		"Natsume Yuujinchou Go": "",
+		"Isekai Quartet": "Квартет из другого мира",
+		"Fairy Tail: Final Series": "Сказка о Хвосте феи: Финал",
+		"Fairy Gone": "Исход фей",
+		"Nande Koko ni Sensei ga!?": "Учитель, почему Вы здесь?!",
+		"Fruits Basket (2019)": "Корзинка с фруктами",
+		"RobiHachi": "РобиХачи",
+		"Kawaikereba Hentai demo Suki ni Natte Kuremasu ka?": "Полюбишь ли ты извращенку, если она милая?",
+		"Shingeki no Kyojin Season 3 Part 2": "Атака титанов 3 (часть 2)",
+		"Dumbbell Nan Kilo Moteru?": "Сколько кило тянешь?"
 	}
 }
 
