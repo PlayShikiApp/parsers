@@ -110,6 +110,11 @@ def find_animes(parsers = OrderedDict([
 
 			if use_anime_aliases:
 				search_kwargs["anime_aliases"] = [anime_info["anime_russian"]]
+				if (hosting in misc.FORCE_ALIASES) and (anime_info["anime_english"] in misc.FORCE_ALIASES[hosting]):
+					forced_name = misc.FORCE_ALIASES[hosting][anime_info["anime_english"]]
+					#print("%s: forcing name '%s' because found in FORCE_ALIASES" % (anime_info["anime_english"], forced_name))
+					#anime_info["anime_english"] = forced_name
+					search_kwargs["anime_aliases"] = [forced_name]
 
 			if not parser.search_anime(anime_info["anime_english"], **search_kwargs):
 				note = "not found"

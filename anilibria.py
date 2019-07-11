@@ -21,6 +21,7 @@ class AnilibriaParser(parser.Parser):
 
 	url_to_embed = lambda self, url: self.build_url(path = url.replace("]//", "]https://"))
 	get_quality = lambda self, url: ("%dp" % max([int(i.split("[")[-1].split("]")[0][:-1]) for i in url.split(",")]))
+	name_match_threshold = 93
 
 	def __init__(self, query_parameter = "search", fetch_latest_episode = True):
 		self.scheme = "https"
@@ -44,17 +45,24 @@ class AnilibriaParser(parser.Parser):
 		print(results)
 		best_score = 0
 		best_result = None
+		print("_find_best_match: names: %s" % str(anime_names))
 
 		for name in anime_names:
-			name = name
-			#print("_find_best_match: result: %s, name: %s" % (str(results), name))
+			print("_find_best_match: name: %s" % name)
 
 			for k, v in results.items():
 				score = fuzz.ratio(name, k)
 				if score > best_score:
 					best_score = score
 					best_result = v
-					#print(best_score, best_result)
+					print("%s: score=%d" % (best_result, best_score))
+
+		if not best_result:
+			return
+
+		if best_score < self.name_match_threshold:
+			print("%s has score %d, rejecting" % (str(best_result), best_score))
+			best_result = None
 
 		return best_result
 	def search_anime(self, anime_english, anime_aliases = [], type_ = ""):
@@ -99,6 +107,7 @@ class AnilibriaParser(parser.Parser):
 					continue
 
 				anime_page_url = self._find_best_match(resp_data, anime_names = anime_aliases)
+				print("search: anime_page_url=%s" % anime_page_url)
 				if not anime_page_url:
 					print("!anime_page_url")
 					continue
