@@ -26,7 +26,10 @@ FORCE_ALIASES = {
 		"RobiHachi": "РобиХачи",
 		"Kawaikereba Hentai demo Suki ni Natte Kuremasu ka?": "Полюбишь ли ты извращенку, если она милая?",
 		"Shingeki no Kyojin Season 3 Part 2": "Атака титанов 3 (часть 2)",
-		"Dumbbell Nan Kilo Moteru?": "Сколько кило тянешь?"
+		"Dumbbell Nan Kilo Moteru?": "Сколько кило тянешь?",
+		"Black Clover": "Чёрный Клевер",
+		"Cop Craft": "Ремесло копа",
+		"Fairy Tail: Final Series": "Сказка о Хвосте феи (2018)"
 	}
 }
 
@@ -47,5 +50,6 @@ SKIP = [
 
 MANUALLY_TRACKED_IDS = [
 	39456,
-	39198
+	39198,
+	34572
 ]
