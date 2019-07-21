@@ -49,7 +49,8 @@ SKIP = [
 ]
 
 MANUALLY_TRACKED_IDS = [
+	269, # Bleach
+	34572,
 	39456,
 	39198,
-	34572
 ]
