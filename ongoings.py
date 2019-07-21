@@ -27,7 +27,7 @@ ANIME_TYPES = {
 
 def get_ongoing_id(article):
 	ongoing_url = article.find("a").get("data-tooltip_url")
-	return int(urllib.parse.urlparse(ongoing_url).path.split("/")[2].split("-")[0])
+	return int("".join([i for i in urllib.parse.urlparse(ongoing_url).path.split("/")[2].split("-")[0] if i.isdigit()]))
 
 def fetch_all_ongoings(ids):
 	OUT_DIR = datetime.now().strftime(DATE_FORMAT)
@@ -175,6 +175,7 @@ def main(root_dir = "", start = 0, num_threads = 5, use_asyncio = False):
 		ONGOING_IDS += [get_ongoing_id(a) for a in articles]
 
 	ONGOING_IDS = list(set(ONGOING_IDS))
+	print(ONGOING_IDS)
 	QUEUE_LEN = len(ONGOING_IDS)
 
 	OUT_DIR = datetime.now().strftime(DATE_FORMAT)
