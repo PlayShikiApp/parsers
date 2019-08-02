@@ -133,9 +133,9 @@ class Parser:
 		for retry in range(retry_count):
 			try:
 				return self.handle_method(url, method, data)
-			except urllib.error.URLError as e:
-				error_reason = e.reason
-				catch(error_reason)
+			except Exception as e:
+				error_reason = str(e.reason)
+				catch("url=%s " % url + error_reason)
 			time.sleep(retry_delay)
 		raise RuntimeError("Unable to open URL %s after %d retries" % (url, retry_count))
 

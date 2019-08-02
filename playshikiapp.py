@@ -51,12 +51,12 @@ def get_videos_list(parser, anime_number, anime_total, anime_id, hosting, anime_
 
 	# HAX: more appropriate solution?
 	# When fetching non-ongoings, set episode_to to high value for now to fetch all episodes.
-	if not fetch_only_ongoings:
+	if not fetch_only_ongoings or anime_id in ongoings.ONGOING_IDS:
 		episode_to = 9999
 	if fetch_only_ongoings:
 		if not fetch_all_episodes:
 			latest = 1 if parser.fetch_latest_episode else 0
-			
+
 			if shiki_ongoing_data["episodes_available"] - (1 - latest) <= max_episode:
 				note = "already fetched all available episodes"
 				print("[%d / %d] %s: %s" % (anime_number, anime_total, anime_info["anime_english"], note))
@@ -74,7 +74,7 @@ def get_videos_list(parser, anime_number, anime_total, anime_id, hosting, anime_
 		df = parser.get_videos_list(anime_info["anime_english"], episode_num)
 		if (isinstance(df, type(None))) or df.empty:
 			note = "no videos found"
-			if not fetch_only_ongoings:
+			if (not fetch_only_ongoings or anime_id in ongoings.ONGOING_IDS):
 				note = "the max boundary episode_to was not specified."
 				note += " Skipping fetch because episode %d was not found." % episode_num
 				print("[%d / %d] %s (%d / %d): %s" % (anime_number, anime_total, anime_info["anime_english"], episode_num, episode_to, note))
@@ -119,7 +119,8 @@ def find_animes(parsers = OrderedDict([
 		if fetch_only_ongoings:
 			anime_ids = ongoings.ONGOING_IDS
 		else:
-			anime_ids = [i for i in anime_ids if not i in ongoings.ONGOING_IDS]
+			print(misc.MANUALLY_TRACKED_IDS)
+			anime_ids = ongoings.ONGOING_IDS + misc.MANUALLY_TRACKED_IDS
 
 	result = pd.DataFrame()
 	for hosting, Parser in parsers.items():
@@ -138,7 +139,7 @@ def find_animes(parsers = OrderedDict([
 			try:
 				anime_info = routes.get_anime_info(anime_id)
 			except:
-				if not fetch_only_ongoings:
+				if not (fetch_only_ongoings or id in ongoings.ONGOING_IDS):
 					note = "not found"
 					print("[%d / %d]: %s" % (n, total, note))
 					continue
@@ -165,7 +166,7 @@ def find_animes(parsers = OrderedDict([
 
 			search_kwargs = {}
 
-			if fetch_only_ongoings:
+			if fetch_only_ongoings or id in ongoings.ONGOING_IDS:
 				if not shiki_ongoing_data:
 					shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(anime_id))
 
