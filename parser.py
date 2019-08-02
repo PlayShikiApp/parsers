@@ -33,6 +33,7 @@ class Parser:
 
 	page_name_escape_chars = [":", "/", "?", "*"]
 
+	name_match_threshold = 93
 	supported_media_kinds = []
 
 	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q"):
