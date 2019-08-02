@@ -15,6 +15,7 @@ from bs4 import BeautifulSoup
 from fuzzysearch import find_near_matches
 from parsers import ongoings
 from parsers import parser, misc, tools
+from parsers.parser import MEDIA_KIND_VIDEOS, MEDIA_KIND_TORRENTS
 DATE_FORMAT = parser.DATE_FORMAT
 
 class SearchPattern:
@@ -123,7 +124,9 @@ class SibnetParser(parser.Parser):
 	episode_tokens = ["серия", "Серия", "Эпизод", "episode", "-"]
 
 	anime_aliases = {}
-	
+
+	supported_media_kinds = [MEDIA_KIND_VIDEOS]
+
 	def get_video_id(self, url):
 		return url.split("/video")[-1].split("-")[0]
 

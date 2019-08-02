@@ -10,6 +10,7 @@ from functools import lru_cache
 from sqlalchemy import create_engine
 
 from parsers import ongoings, anime365, sovetromantica, sibnet, anilibria, misc
+from parsers.parser import MEDIA_KIND_VIDEOS, MEDIA_KIND_TORRENTS
 from parsers.tools import catch
 from shikimori import routes, models
 
@@ -107,6 +108,7 @@ def find_animes(parsers = OrderedDict([
 			("sibnet", sibnet.SibnetParser)
 		      ]),
 		      anime_ids = [],
+		      media_kind = MEDIA_KIND_VIDEOS,
 		      fetch_only_ongoings = True,
 		      fetch_all_episodes = False,
 		      filter_by_unique_url = True,
@@ -123,6 +125,12 @@ def find_animes(parsers = OrderedDict([
 	for hosting, Parser in parsers.items():
 		print("hosting: " + hosting)
 		parser = Parser()
+		if not parser.is_media_kind_supported(media_kind):
+			print("parser doesn't support media kind %s" % media_kind)
+			continue
+		else:
+			print("fetching media kind %s" % media_kind)
+
 		total = len(anime_ids)
 		for n, anime_id in enumerate(anime_ids, start = 1):
 			note = "found"
@@ -180,7 +188,9 @@ def find_animes(parsers = OrderedDict([
 
 			print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
 
-			tmp_videos_list = get_videos_list(parser, n, total, anime_id, hosting, anime_info, shiki_ongoing_data, fetch_only_ongoings, fetch_all_episodes, filter_by_unique_url)
+			if media_kind == MEDIA_KIND_VIDEOS:
+				tmp_videos_list = get_videos_list(parser, n, total, anime_id, hosting, anime_info, shiki_ongoing_data, fetch_only_ongoings, fetch_all_episodes, filter_by_unique_url)
+
 			if (isinstance(tmp_videos_list, type(None))) or tmp_videos_list.empty:
 				continue
 

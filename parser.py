@@ -15,6 +15,9 @@ from parsers.tools import catch
 DATE_FORMAT = "%d.%m.%Y"
 CACHE_DIR = "parsers_cache"
 
+MEDIA_KIND_VIDEOS = "videos"
+MEDIA_KIND_TORRENTS = "torrents"
+
 class Parser:
 	to_db_kind = {
                 "fandub": "озвучка",
@@ -30,6 +33,8 @@ class Parser:
 
 	page_name_escape_chars = [":", "/", "?", "*"]
 
+	supported_media_kinds = []
+
 	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q"):
 		for a in self.attributes:
 			if not hasattr(self, a):
@@ -43,6 +48,9 @@ class Parser:
 		self.query_parameter = query_parameter
 		self.ensure_cache_dir_exists()
 		return
+
+	def is_media_kind_supported(self, media_kind):
+		return media_kind in self.supported_media_kinds
 
 	def ensure_cache_dir_exists(self):
 		self.cache_root = os.path.join(CACHE_DIR, datetime.now().strftime(DATE_FORMAT))

@@ -13,6 +13,8 @@ from bs4 import BeautifulSoup
 from fuzzysearch import find_near_matches
 from parsers import ongoings
 from parsers import parser, misc
+from parsers.parser import MEDIA_KIND_VIDEOS, MEDIA_KIND_TORRENTS
+
 DATE_FORMAT = parser.DATE_FORMAT
 
 class Anime365Parser(parser.Parser):
@@ -31,6 +33,8 @@ class Anime365Parser(parser.Parser):
 		"yaponskie-subtitry": "japanese",
 		"raw": "japanese"
 	}
+
+	supported_media_kinds = [MEDIA_KIND_VIDEOS]
 
 	anime365_name_chars = string.ascii_letters + string.digits + " "
 

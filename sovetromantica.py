@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 from fuzzysearch import find_near_matches
 from parsers import ongoings
 from parsers import parser, misc, tools
+from parsers.parser import MEDIA_KIND_VIDEOS, MEDIA_KIND_TORRENTS
 DATE_FORMAT = parser.DATE_FORMAT
 
 class SRParser(parser.Parser):
@@ -23,6 +24,9 @@ class SRParser(parser.Parser):
 	get_episode_num = lambda self, url: url.split("/")[-1].split("_")[-1]
 	get_anime_id = lambda self, url: url.split("_")[1]
 	get_anime_kind = lambda self, url: url.split("_")[2]
+
+	supported_media_kinds = [MEDIA_KIND_VIDEOS]
+
 	def url_to_embed(self, url, kind):
 		return self.build_url(netloc = self.netloc,
 				path = "embed/episode_%s_%s-%s" % (self.get_anime_id(url), self.get_episode_num(url), kind))

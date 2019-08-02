@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
 from parsers import ongoings
 from parsers import parser, misc, tools
+from parsers.parser import MEDIA_KIND_VIDEOS, MEDIA_KIND_TORRENTS
 DATE_FORMAT = parser.DATE_FORMAT
 
 class AnilibriaParser(parser.Parser):
@@ -22,6 +23,8 @@ class AnilibriaParser(parser.Parser):
 	url_to_embed = lambda self, url: self.build_url(path = url.replace("]//", "]https://"))
 	get_quality = lambda self, url: ("%dp" % max([int(i.split("[")[-1].split("]")[0][:-1]) for i in url.split(",")]))
 	name_match_threshold = 93
+
+	supported_media_kinds = [MEDIA_KIND_VIDEOS]
 
 	def __init__(self, query_parameter = "search", fetch_latest_episode = True):
 		self.scheme = "https"
