@@ -96,6 +96,10 @@ def get_videos_list(parser, anime_number, anime_total, anime_id, hosting, anime_
 
 	return tmp_videos_list
 
+def merge_search_results(main_res, res):
+	main_res = main_res.append(res, ignore_index = True, sort = False)
+	return main_res
+
 def find_animes(parsers = OrderedDict([
 			("anilibria", anilibria.AnilibriaParser),
 			("smotretanime", anime365.Anime365Parser),
@@ -115,7 +119,7 @@ def find_animes(parsers = OrderedDict([
 		else:
 			anime_ids = [i for i in anime_ids if not i in ongoings.ONGOING_IDS]
 
-	result = pd.DataFrame(columns = ["anime_id", "anime_english", "anime_russian", "watches_count", "uploader", "url", "episode", "kind", "quality", "language", "author"])
+	result = pd.DataFrame()
 	for hosting, Parser in parsers.items():
 		print("hosting: " + hosting)
 		parser = Parser()
@@ -180,5 +184,5 @@ def find_animes(parsers = OrderedDict([
 			if (isinstance(tmp_videos_list, type(None))) or tmp_videos_list.empty:
 				continue
 
-			result = result.append(tmp_videos_list, ignore_index = True, sort = False)
+			result = merge_search_results(result, tmp_videos_list)
 	return result
