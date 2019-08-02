@@ -43,6 +43,59 @@ def save(pd_dataframe, from_pickle = False, format = "sql"):
 		res[-1] = res[-1][:-1] + ";"
 		open("ongoings.sql", "wb").write("\n".join(res).encode("u8"))
 
+def get_videos_list(parser, anime_number, anime_total, anime_id, hosting, anime_info, shiki_ongoing_data = None, fetch_only_ongoings = True, fetch_all_episodes = False, filter_by_unique_url = True):
+	max_episode = routes.get_max_episode_for_hosting(anime_id, hosting)
+	episode_from = 1
+	episode_to = 1
+
+	# HAX: more appropriate solution?
+	# When fetching non-ongoings, set episode_to to high value for now to fetch all episodes.
+	if not fetch_only_ongoings:
+		episode_to = 9999
+	if fetch_only_ongoings:
+		if not fetch_all_episodes:
+			latest = 1 if parser.fetch_latest_episode else 0
+			
+			if shiki_ongoing_data["episodes_available"] - (1 - latest) <= max_episode:
+				note = "already fetched all available episodes"
+				print("[%d / %d] %s: %s" % (anime_number, anime_total, anime_info["anime_english"], note))
+				return
+
+			episode_from = max_episode + 1
+			episode_to = shiki_ongoing_data["episodes_available"] + latest
+		else:
+			episode_from = 1
+			if shiki_ongoing_data:
+				episode_to = shiki_ongoing_data["episodes_available"] + 1
+
+	tmp_videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])
+	for episode_num in range(episode_from, episode_to):
+		df = parser.get_videos_list(anime_info["anime_english"], episode_num)
+		if (isinstance(df, type(None))) or df.empty:
+			note = "no videos found"
+			if not fetch_only_ongoings:
+				note = "the max boundary episode_to was not specified."
+				note += " Skipping fetch because episode %d was not found." % episode_num
+				print("[%d / %d] %s (%d / %d): %s" % (anime_number, anime_total, anime_info["anime_english"], episode_num, episode_to, note))
+				break
+			print("[%d / %d] %s (%d / %d): %s" % (anime_number, anime_total, anime_info["anime_english"], episode_num, episode_to, note))
+
+		print("[%d / %d] %s (%d / %d)" % (anime_number, anime_total, anime_info["anime_english"], episode_num, episode_to))
+		tmp_videos_list = tmp_videos_list.append(df, ignore_index = True, sort = False)
+
+	tmp_videos_list["anime_id"] = str(anime_id)
+	tmp_videos_list["anime_english"] = anime_info["anime_english"]
+	tmp_videos_list["anime_russian"] = anime_info["anime_russian"]
+	tmp_videos_list["watches_count"] = "0"
+	tmp_videos_list["uploader"] = "importbot"
+	del tmp_videos_list["video_hosting"]
+	#print(tmp_videos_list.values.tolist())
+	if filter_by_unique_url:
+		ongoing_all_videos = [o.url for o in models.AnimeVideo.query.filter(models.AnimeVideo.anime_id == anime_id).all()]
+		tmp_videos_list = tmp_videos_list[~tmp_videos_list.url.isin(ongoing_all_videos)]
+
+	return tmp_videos_list
+
 def find_animes(parsers = OrderedDict([
 			("anilibria", anilibria.AnilibriaParser),
 			("smotretanime", anime365.Anime365Parser),
@@ -67,18 +120,18 @@ def find_animes(parsers = OrderedDict([
 		print("hosting: " + hosting)
 		parser = Parser()
 		total = len(anime_ids)
-		for n, id in enumerate(anime_ids, start = 1):
+		for n, anime_id in enumerate(anime_ids, start = 1):
 			note = "found"
 			shiki_ongoing_data = {}
 			try:
-				anime_info = routes.get_anime_info(id)
+				anime_info = routes.get_anime_info(anime_id)
 			except:
 				if not fetch_only_ongoings:
 					note = "not found"
 					print("[%d / %d]: %s" % (n, total, note))
 					continue
 				catch()
-				shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(id))
+				shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(anime_id))
 				if not shiki_ongoing_data["anime_russian"] or not shiki_ongoing_data["anime_english"]:
 					note = "not found in database and couldn't retrieve anime names, skipping"
 					print("[%d / %d]: %s: %s" % (n, total, anime_info["anime_english"], note))
@@ -102,7 +155,7 @@ def find_animes(parsers = OrderedDict([
 
 			if fetch_only_ongoings:
 				if not shiki_ongoing_data:
-					shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(id))
+					shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(anime_id))
 
 				if shiki_ongoing_data["type"]:
 					#print("type: %s" % shiki_ongoing_data["type"])
@@ -121,57 +174,11 @@ def find_animes(parsers = OrderedDict([
 				print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
 				continue
 
-
-			max_episode = routes.get_max_episode_for_hosting(id, hosting)
-			episode_from = 1
-			episode_to = 1
-
-			# HAX: more appropriate solution?
-			# When fetching non-ongoings, set episode_to to high value for now to fetch all episodes.
-			if not fetch_only_ongoings:
-				episode_to = 9999
-			if fetch_only_ongoings:
-				if not fetch_all_episodes:
-					latest = 1 if parser.fetch_latest_episode else 0
-
-					if shiki_ongoing_data["episodes_available"] - (1 - latest) <= max_episode:
-						note = "already fetched all available episodes"
-						print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
-						continue
-
-					episode_from = max_episode + 1
-					episode_to = shiki_ongoing_data["episodes_available"] + latest
-				else:
-					episode_from = 1
-					if shiki_ongoing_data:
-						episode_to = shiki_ongoing_data["episodes_available"] + 1
-
 			print("[%d / %d] %s: %s" % (n, total, anime_info["anime_english"], note))
-			tmp_videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])
-			for episode_num in range(episode_from, episode_to):
-				df = parser.get_videos_list(anime_info["anime_english"], episode_num)
-				if (isinstance(df, type(None))) or df.empty:
-					note = "no videos found"
-					if not fetch_only_ongoings:
-						note = "the max boundary episode_to was not specified."
-						note += " Skipping fetch because episode %d was not found." % episode_num
-						print("[%d / %d] %s (%d / %d): %s" % (n, total, anime_info["anime_english"], episode_num, episode_to, note))
-						break
-					print("[%d / %d] %s (%d / %d): %s" % (n, total, anime_info["anime_english"], episode_num, episode_to, note))
 
-				print("[%d / %d] %s (%d / %d)" % (n, total, anime_info["anime_english"], episode_num, episode_to))
-				tmp_videos_list = tmp_videos_list.append(df, ignore_index = True, sort = False)
+			tmp_videos_list = get_videos_list(parser, n, total, anime_id, hosting, anime_info, shiki_ongoing_data, fetch_only_ongoings, fetch_all_episodes, filter_by_unique_url)
+			if (isinstance(tmp_videos_list, type(None))) or tmp_videos_list.empty:
+				continue
 
-			tmp_videos_list["anime_id"] = str(id)
-			tmp_videos_list["anime_english"] = anime_info["anime_english"]
-			tmp_videos_list["anime_russian"] = anime_info["anime_russian"]
-			tmp_videos_list["watches_count"] = "0"
-			tmp_videos_list["uploader"] = "importbot"
-			del tmp_videos_list["video_hosting"]
-			#print(tmp_videos_list.values.tolist())
-			if filter_by_unique_url:
-				ongoing_all_videos = [o.url for o in models.AnimeVideo.query.filter(models.AnimeVideo.anime_id == id).all()]
-				tmp_videos_list = tmp_videos_list[~tmp_videos_list.url.isin(ongoing_all_videos)]
-			
 			result = result.append(tmp_videos_list, ignore_index = True, sort = False)
 	return result
