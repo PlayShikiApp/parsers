@@ -36,10 +36,11 @@ class Parser:
 	name_match_threshold = 93
 	supported_media_kinds = []
 
-	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q"):
-		for a in self.attributes:
-			if not hasattr(self, a):
-				raise ValueError("Derived classes must set %s attribute before invoking parent class" % a)
+	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q", abstract_class = False):
+		if not abstract_class:
+			for a in self.attributes:
+				if not hasattr(self, a):
+					raise ValueError("Derived classes must set %s attribute before invoking parent class" % a)
 
 		self.url = url
 		self.main_url = main_url
@@ -48,6 +49,8 @@ class Parser:
 		self.query_kwargs = query_kwargs
 		self.query_parameter = query_parameter
 		self.ensure_cache_dir_exists()
+		if not hasattr(self, "headers"):
+			self.headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36"}
 		return
 
 	def is_media_kind_supported(self, media_kind):
@@ -126,6 +129,9 @@ class Parser:
 			#request = mechanize.Request(url)
 			#return mechanize.urlopen(request, data = bytes(urllib.parse.urlencode(data).encode()))
 			req = urllib.request.Request(url)
+			for k, v in self.headers.items():
+				req.add_header(k, v)
+
 			data = urllib.parse.urlencode(data).encode("u8")
 			return urllib.request.urlopen(req, data = data)
 
