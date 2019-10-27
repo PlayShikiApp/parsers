@@ -40,7 +40,7 @@ class Anime365Parser(parser.Parser):
 
 	def __init__(self, query_parameter = "q", fetch_latest_episode = True):
 		self.scheme = "https"
-		self.netloc = "smotret-anime-365.ru"
+		self.netloc = "smotret-anime.online"
 		# for compatibility reasons
 		self.netloc_alias = "smotretanime.ru"
 		self.fetch_latest_episode = fetch_latest_episode

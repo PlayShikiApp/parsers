@@ -5,7 +5,8 @@ ALIASES = {
 	"Detective Conan": ["Meitantei Conan", "Case Closed"],
 	"JoJo no Kimyou na Bouken Part 5: Ougon no Kaze": ["JoJo no Kimyou na Bouken: Ougon no Kaze"],
 	"Mangaka-san to Assistant-san to The Animation": ["Mangaka to assistant"],
-	"Gintama.: Porori-hen": ["Gintama 6"]
+	"Gintama.: Porori-hen": ["Gintama 6"],
+	"Lord El-Melloi II Sei no Jikenbo: Rail Zeppelin Grace Note": ["Досье лорда"]
 }
 
 FORCE_ALIASES = {
@@ -30,7 +31,8 @@ FORCE_ALIASES = {
 		"Dumbbell Nan Kilo Moteru?": "Сколько кило тянешь?",
 		"Black Clover": "Чёрный Клевер",
 		"Cop Craft": "Ремесло копа",
-		"Fairy Tail: Final Series": "Сказка о Хвосте феи (2018)"
+		"Fairy Tail: Final Series": "Сказка о Хвосте феи (2018)",
+		"Lord El-Melloi II Sei no Jikenbo: Rail Zeppelin Grace Note": "Досье лорда"
 	}
 }
 
