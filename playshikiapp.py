@@ -54,7 +54,7 @@ def get_videos_list(parser, anime_number, anime_total, anime_id, hosting, anime_
 	if not fetch_only_ongoings or anime_id in ongoings.ONGOING_IDS:
 		episode_to = 9999
 	if fetch_only_ongoings:
-		if not fetch_all_episodes:
+		if not fetch_all_episodes and (max_episode != 0):
 			latest = 1 if parser.fetch_latest_episode else 0
 
 			if shiki_ongoing_data["episodes_available"] - (1 - latest) <= max_episode:
