@@ -29,19 +29,22 @@ def get_ongoing_id(article):
 	ongoing_url = article.find("a").get("data-tooltip_url")
 	return int("".join([i for i in urllib.parse.urlparse(ongoing_url).path.split("/")[2].split("-")[0] if i.isdigit()]))
 
+def get_anime_page_url(id):
+	return "https://shikimori.one/animes/z%d" % id
+
 def fetch_all_ongoings(ids):
 	OUT_DIR = datetime.now().strftime(DATE_FORMAT)
 	if not os.path.exists(OUT_DIR):
 		os.makedirs(OUT_DIR)
 	total = len(ids)
 	for n, id in enumerate(ids, start = 1):
-		print("%d / %d" % (n, total))
+		url = get_anime_page_url(id)
+		print("[%d/%d] %s" % (n, total, url))
 		out_file = os.path.join(OUT_DIR, "%d.html" % id)
 
 		if os.path.exists(out_file) and os.stat(out_file).st_size != 0:
 			continue
 
-		url = "https://shikimori.one/animes/%d" % id
 		req = urllib.request.Request(url)
 		time.sleep(1.5)
 		error = True
@@ -136,7 +139,7 @@ def get_ongoing_html(id):
 
 	out_file = os.path.join(OUT_DIR, "%d.html" % id)
 	if not os.path.exists(out_file) or os.stat(out_file).st_size == 0:
-		req = urllib.request.Request("https://shikimori.one/animes/%d" % id)
+		req = urllib.request.Request(get_anime_page_url(id))
 		open(out_file, "w").write(urllib.request.urlopen(req).read().decode("u8"))
 	return open(out_file, "r").read()
 
@@ -150,7 +153,7 @@ async def get_ongoing_html_async(id):
 	try:
 		if os.path.exists(out_file) and os.stat(out_file).st_size != 0:
 			return
-		req = urllib.request.Request("https://shikimori.one/animes/%d" % id)
+		req = urllib.request.Request(get_anime_page_url(id))
 		await async_urlopen(req, out_file)
 	except:
 		raise
