@@ -71,9 +71,13 @@ def parse_ongoing(html):
 	content = page.find("div", {"class": "l-content"})
 	dateCreated = ""
 
-	entry_info = content.find("div", "b-entry-info")
-	entry_lines = [line.find("div", {"class": "line"}) for line in entry_info.find_all("div", {"class": "line-container"})]
 	res = dict()
+	try:
+		entry_info = content.find("div", "b-entry-info")
+	except AttributeError:
+		return res
+
+	entry_lines = [line.find("div", {"class": "line"}) for line in entry_info.find_all("div", {"class": "line-container"})]
 	for line in entry_lines:
 		values = []
 		if not line:

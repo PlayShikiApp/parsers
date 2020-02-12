@@ -145,6 +145,8 @@ def find_animes(parsers = OrderedDict([
 					continue
 				catch()
 				shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(anime_id))
+				if not shiki_ongoing_data:
+					continue
 				if not shiki_ongoing_data["anime_russian"] or not shiki_ongoing_data["anime_english"]:
 					note = "not found in database and couldn't retrieve anime names, skipping"
 					print("[%d / %d]: %s: %s" % (n, total, anime_info["anime_english"], note))
@@ -169,6 +171,9 @@ def find_animes(parsers = OrderedDict([
 			if fetch_only_ongoings or id in ongoings.ONGOING_IDS:
 				if not shiki_ongoing_data:
 					shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(anime_id))
+
+				if not shiki_ongoing_data:
+					continue
 
 				if shiki_ongoing_data["type"]:
 					#print("type: %s" % shiki_ongoing_data["type"])
