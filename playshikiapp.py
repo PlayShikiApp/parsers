@@ -144,8 +144,12 @@ def find_animes(parsers = OrderedDict([
 					print("[%d / %d]: %s" % (n, total, note))
 					continue
 				catch()
-				shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(anime_id))
-				if not shiki_ongoing_data:
+				try:
+					shiki_ongoing_data = ongoings.parse_ongoing(ongoings.get_ongoing_html(anime_id))
+					if not shiki_ongoing_data:
+						continue
+				except:
+					catch()
 					continue
 				if not shiki_ongoing_data["anime_russian"] or not shiki_ongoing_data["anime_english"]:
 					note = "not found in database and couldn't retrieve anime names, skipping"
@@ -181,6 +185,13 @@ def find_animes(parsers = OrderedDict([
 
 			if use_anime_aliases:
 				search_kwargs["anime_aliases"] = [anime_info["anime_russian"]]
+				in_forced_list = False
+				if hosting in misc.FORCE_ALIASES:
+					in_forced_list = anime_info["anime_english"] in misc.FORCE_ALIASES[hosting]
+				print("%s: in forced list: %d: %s" %(anime_info["anime_english"], in_forced_list, str(misc.FORCE_ALIASES[hosting])))
+				if in_forced_list:
+					anime_info["anime_english"] = misc.FORCE_ALIASES[hosting][anime_info["anime_english"]]
+
 				if (hosting in misc.FORCE_ALIASES) and (anime_info["anime_english"] in misc.FORCE_ALIASES[hosting]):
 					forced_name = misc.FORCE_ALIASES[hosting][anime_info["anime_english"]]
 					#print("%s: forcing name '%s' because found in FORCE_ALIASES" % (anime_info["anime_english"], forced_name))

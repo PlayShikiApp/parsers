@@ -7,7 +7,7 @@ ALIASES = {
 	"Mangaka-san to Assistant-san to The Animation": ["Mangaka to assistant"],
 	"Gintama.: Porori-hen": ["Gintama 6"],
 	"Lord El-Melloi II Sei no Jikenbo: Rail Zeppelin Grace Note": ["Досье лорда"],
-	"Sword Art Online: Alicization - War of Underworld": ["Мастера Меча Онлайн: Алисизация — Война в Подмирье"]
+	"Sword Art Online: Alicization - War of Underworld": ["Мастера Меча Онлайн: Алисизация — Война в Подмирье"],
 }
 
 FORCE_ALIASES = {
@@ -34,6 +34,9 @@ FORCE_ALIASES = {
 		"Cop Craft": "Ремесло копа",
 		"Fairy Tail: Final Series": "Сказка о Хвосте феи (2018)",
 		"Lord El-Melloi II Sei no Jikenbo: Rail Zeppelin Grace Note": "Досье лорда",
+		"Re:Zero kara Hajimeru Isekai Seikatsu - Hyouketsu no Kizuna": "Re: Жизнь в другом мире с нуля - Замороженные узы",
+		"Re:Zero kara Hajimeru Isekai Seikatsu - Memory Snow": "Re: Жизнь в другом мире с нуля - Снежные воспоминания",
+		"Re:Zero kara Hajimeru Isekai Seikatsu: Memory Snow": "Re: Жизнь в другом мире с нуля - Снежные воспоминания"
 	}
 }
 
@@ -58,5 +61,7 @@ MANUALLY_TRACKED_IDS = [
 	39456,
 	39198,
 	36474,
-	39597 # Sword Art Online: Alicization - War of Underworld
+	39597, # Sword Art Online: Alicization - War of Underworld
+	36286,
+	38414
 ]

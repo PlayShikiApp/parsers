@@ -57,9 +57,10 @@ def fetch_all_ongoings(ids):
 				break
 			except (urllib.error.URLError, urllib.error.HTTPError) as e:
 				catch(e.reason)
+				break
 			time.sleep(5)
-		if error:
-			raise RuntimeError("Unable to open URL %s after %d retries" % (url, retries))
+		#if error:
+		#	raise RuntimeError("Unable to open URL %s after %d retries" % (url, retries))
 
 
 def get_ongoing_info(id):

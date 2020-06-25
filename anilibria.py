@@ -75,6 +75,7 @@ class AnilibriaParser(parser.Parser):
 			names += misc.ALIASES[anime_english]
 
 		found = False
+		print("anilibria: search_anime: anime_english=%s, anime_aliases=%s, names=%s" % (anime_english, str(anime_aliases), str(names)))
 		for anime_name in names:
 			page_name = "%s.html" % anime_name
 			page_data = self.load_page(page_name)
@@ -137,6 +138,7 @@ class AnilibriaParser(parser.Parser):
 	def parse_anime_page(self, anime_english, type_ = ""):
 		anime_page = self.search_anime(anime_english, type_)
 		if not anime_page:
+			print("parse_anime_page: not found")
 			return self.handler_anime_not_found(anime_english)
 
 		content_main = BeautifulSoup(anime_page, features = "html5lib")
@@ -177,7 +179,12 @@ class AnilibriaParser(parser.Parser):
 
 	@Cache(prefix="AnilibriaParser")
 	def get_videos_list(self, anime_english, episode_num, type_ = ""):
-		authors, videos = self.parse_anime_page(anime_english, type_)
+		try:
+			obj = self.parse_anime_page(anime_english, type_)
+			authors, videos = obj
+		except:
+			print("parse_anime_page returned %s" % str(obj))
+			raise
 
 		if not episode_num in videos:
 			return self.handler_epidode_not_found(anime_english, episode_num)
