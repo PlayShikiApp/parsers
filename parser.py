@@ -36,7 +36,7 @@ class Parser:
 	name_match_threshold = 93
 	supported_media_kinds = []
 
-	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q", abstract_class = False):
+	def __init__(self, url, main_url, headers = {}, query_kwargs = {}, query_parameter = "q", abstract_class = False, anime_id = -1):
 		if not abstract_class:
 			for a in self.attributes:
 				if not hasattr(self, a):

@@ -71,7 +71,13 @@ def get_videos_list(parser, anime_number, anime_total, anime_id, hosting, anime_
 
 	tmp_videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])
 	for episode_num in range(episode_from, episode_to):
-		df = parser.get_videos_list(anime_info["anime_english"], episode_num)
+		if hosting == "nekomori":
+			df = parser.get_videos_list(anime_english = anime_info["anime_english"], episode_num = episode_num, anime_id = anime_id)
+		else:
+			df = parser.get_videos_list(anime_info["anime_english"], episode_num)
+
+		#if (episode_num == 2 and not (isinstance(df, type(None)) or df.empty)):
+		#	raise RuntimeError("wtf")
 		if (isinstance(df, type(None))) or df.empty:
 			note = "no videos found"
 			if (not fetch_only_ongoings or anime_id in ongoings.ONGOING_IDS):
@@ -184,11 +190,13 @@ def find_animes(parsers = OrderedDict([
 					search_kwargs["type_"] = shiki_ongoing_data["type"]
 
 			if use_anime_aliases:
-				search_kwargs["anime_aliases"] = [anime_info["anime_russian"]]
+				search_kwargs["anime_aliases"] = []
+				if anime_info["anime_russian"]:
+					search_kwargs["anime_aliases"] = [anime_info["anime_russian"]]
 				in_forced_list = False
 				if hosting in misc.FORCE_ALIASES:
 					in_forced_list = anime_info["anime_english"] in misc.FORCE_ALIASES[hosting]
-				print("%s: in forced list: %d: %s" %(anime_info["anime_english"], in_forced_list, str(misc.FORCE_ALIASES[hosting])))
+				#print("%s: in forced list: %d: %s" %(anime_info["anime_english"], in_forced_list, str(misc.FORCE_ALIASES[hosting])))
 				if in_forced_list:
 					anime_info["anime_english"] = misc.FORCE_ALIASES[hosting][anime_info["anime_english"]]
 
