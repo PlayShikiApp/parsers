@@ -12,31 +12,33 @@ ALIASES = {
 
 FORCE_ALIASES = {
 	"anilibria": {
-		"Kimi no Na wa.": "Твоё имя",
-		"Gintama°": "", # Gintama 4
-		"Gintama'": "", # Gintama 2
-		"Gintama.": "", # Gintama 5
-		"Gintama": "", # Gintama
-		"Code Geass: Hangyaku no Lelouch R2": "Код Гиасс: Восстание Лелуша R2", # Code Geass: Hangyaku no Lelouch R2
-		"One Punch Man": "Ванпанчмен",
-		"Monster": "",
-		"Natsume Yuujinchou Go": "",
-		"Isekai Quartet": "Квартет из другого мира",
-		"Fairy Tail: Final Series": "Сказка о Хвосте феи: Финал",
-		"Fairy Gone": "Исход фей",
-		"Nande Koko ni Sensei ga!?": "Учитель, почему Вы здесь?!",
-		"Fruits Basket (2019)": "Корзинка с фруктами",
-		"RobiHachi": "РобиХачи",
-		"Kawaikereba Hentai demo Suki ni Natte Kuremasu ka?": "Полюбишь ли ты извращенку, если она милая?",
-		"Shingeki no Kyojin Season 3 Part 2": "Атака титанов 3 (часть 2)",
-		"Dumbbell Nan Kilo Moteru?": "Сколько кило тянешь?",
-		"Black Clover": "Чёрный Клевер",
-		"Cop Craft": "Ремесло копа",
-		"Fairy Tail: Final Series": "Сказка о Хвосте феи (2018)",
-		"Lord El-Melloi II Sei no Jikenbo: Rail Zeppelin Grace Note": "Досье лорда",
-		"Re:Zero kara Hajimeru Isekai Seikatsu - Hyouketsu no Kizuna": "Re: Жизнь в другом мире с нуля - Замороженные узы",
-		"Re:Zero kara Hajimeru Isekai Seikatsu - Memory Snow": "Re: Жизнь в другом мире с нуля - Снежные воспоминания",
-		"Re:Zero kara Hajimeru Isekai Seikatsu: Memory Snow": "Re: Жизнь в другом мире с нуля - Снежные воспоминания"
+		"Kimi no Na wa.": ["Твоё имя"],
+		"Gintama°": [""], # Gintama 4
+		"Gintama'": [""], # Gintama 2
+		"Gintama.": [""], # Gintama 5
+		"Gintama": [""], # Gintama
+		"Code Geass: Hangyaku no Lelouch R2": ["Код Гиасс: Восстание Лелуша R2"], # Code Geass: Hangyaku no Lelouch R2
+		"One Punch Man": ["Ванпанчмен"],
+		"Monster": [""],
+		"Natsume Yuujinchou Go": [""],
+		"Isekai Quartet": ["Квартет из другого мира"],
+		"Fairy Tail: Final Series": ["Сказка о Хвосте феи: Финал"],
+		"Fairy Gone": ["Исход фей"],
+		"Nande Koko ni Sensei ga!?": ["Учитель, почему Вы здесь?!"],
+		"Fruits Basket (2019)": ["Корзинка с фруктами"],
+		"RobiHachi": ["РобиХачи"],
+		"Kawaikereba Hentai demo Suki ni Natte Kuremasu ka?": ["Полюбишь ли ты извращенку, если она милая?"],
+		"Shingeki no Kyojin Season 3 Part 2": ["Атака титанов 3 (часть 2)"],
+		"Dumbbell Nan Kilo Moteru?": ["Сколько кило тянешь?"],
+		"Black Clover": ["Чёрный Клевер"],
+		"Cop Craft": ["Ремесло копа"],
+		"Fairy Tail: Final Series": ["Сказка о Хвосте феи (2018)"],
+		"Lord El-Melloi II Sei no Jikenbo: Rail Zeppelin Grace Note": ["Досье лорда"],
+		"Re:Zero kara Hajimeru Isekai Seikatsu - Hyouketsu no Kizuna": ["Re: Жизнь в другом мире с нуля - Замороженные узы"],
+		"Re:Zero kara Hajimeru Isekai Seikatsu - Memory Snow": ["Re: Жизнь в другом мире с нуля - Снежные воспоминания"],
+		"Re:Zero kara Hajimeru Isekai Seikatsu: Memory Snow": ["Re: Жизнь в другом мире с нуля - Снежные воспоминания"],
+		"Honzuki no Gekokujou: Shisho ni Naru Tame ni wa Shudan wo Erandeiraremasen": ["/release/honzuki-no-gekokujou-shisho-ni-naru-tame-ni-wa-shudan-wo-erandeiraremasen.html"],
+		"Honzuki no Gekokujou: Shisho ni Naru Tame ni wa Shudan wo Erandeiraremasen 2nd Season" : ["/release/honzuki-no-gekokujou-shisho-ni-naru-tame-ni-wa-shudan-wo-erandeiraremasen-2nd-season.html"]
 	}
 }
 

@@ -38,7 +38,7 @@ class AnilibriaParser(parser.Parser):
 		super().__init__(url = url, main_url = main_url, headers = self.headers, query_kwargs = query_kwargs, query_parameter = query_parameter)
 		self.setup_urlopener()
 
-	def _find_best_match(self, resp, anime_names):
+	def _find_best_match(self, resp, anime_names, release_link):
 		page = BeautifulSoup(resp, features = "html5lib")
 		urls = page.find_all("a")
 		if not urls:
@@ -54,7 +54,12 @@ class AnilibriaParser(parser.Parser):
 			print("_find_best_match: name: %s" % name)
 
 			for k, v in results.items():
+				print("%s ===  %s" % (v, release_link))
+				if v == release_link:
+					return v
+
 				score = fuzz.ratio(name, k)
+				print("%s: name: %s, score=%d" % (name, k, score))
 				if score > best_score:
 					best_score = score
 					best_result = v
@@ -70,9 +75,17 @@ class AnilibriaParser(parser.Parser):
 		return best_result
 	def search_anime(self, anime_english, anime_aliases = [], type_ = ""):
 		names = [anime_english]
+		release_link = ""
 
-		if anime_english in misc.ALIASES:
-			names += misc.ALIASES[anime_english]
+		print("%s aliases = %s" % (anime_english, misc.FORCE_ALIASES["anilibria"][anime_english]))
+
+		if anime_english in misc.FORCE_ALIASES["anilibria"]:
+			for a in misc.FORCE_ALIASES["anilibria"][anime_english]:
+				if not a.endswith(".html"):
+					names += [a]
+				else:
+					print("release = %s" % a)
+					release_link = a
 
 		found = False
 		print("anilibria: search_anime: anime_english=%s, anime_aliases=%s, names=%s" % (anime_english, str(anime_aliases), str(names)))
@@ -110,7 +123,7 @@ class AnilibriaParser(parser.Parser):
 					print("!resp_data")
 					continue
 
-				anime_page_url = self._find_best_match(resp_data, anime_names = anime_aliases)
+				anime_page_url = self._find_best_match(resp_data, anime_names = anime_aliases, release_link = release_link)
 				print("search: anime_page_url=%s" % anime_page_url)
 				if not anime_page_url:
 					print("!anime_page_url")
@@ -123,8 +136,7 @@ class AnilibriaParser(parser.Parser):
 					continue
 
 				page_data = res.get_data()
-					
-				
+
 			self.save_page(page_name, page_data)
 			found = True
 			break
