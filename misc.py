@@ -38,7 +38,8 @@ FORCE_ALIASES = {
 		"Re:Zero kara Hajimeru Isekai Seikatsu - Memory Snow": ["Re: Жизнь в другом мире с нуля - Снежные воспоминания"],
 		"Re:Zero kara Hajimeru Isekai Seikatsu: Memory Snow": ["Re: Жизнь в другом мире с нуля - Снежные воспоминания"],
 		"Honzuki no Gekokujou: Shisho ni Naru Tame ni wa Shudan wo Erandeiraremasen": ["/release/honzuki-no-gekokujou-shisho-ni-naru-tame-ni-wa-shudan-wo-erandeiraremasen.html"],
-		"Honzuki no Gekokujou: Shisho ni Naru Tame ni wa Shudan wo Erandeiraremasen 2nd Season" : ["/release/honzuki-no-gekokujou-shisho-ni-naru-tame-ni-wa-shudan-wo-erandeiraremasen-2nd-season.html"]
+		"Honzuki no Gekokujou: Shisho ni Naru Tame ni wa Shudan wo Erandeiraremasen 2nd Season" : ["/release/honzuki-no-gekokujou-shisho-ni-naru-tame-ni-wa-shudan-wo-erandeiraremasen-2nd-season.html"],
+		"Fate/Grand Order: Zettai Majuu Sensen Babylonia": ["/release/fategrand-order-zettai-majuu-sensen-babylonia.html"]
 	}
 }
 

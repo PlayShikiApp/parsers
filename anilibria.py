@@ -12,6 +12,9 @@ from percache import Cache
 from urllib.parse import urlencode, urlparse, urlunparse, quote_plus
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
+
+from shikimori.models import AnimeVideo
+
 from parsers import ongoings
 from parsers import parser, misc, tools
 from parsers.parser import MEDIA_KIND_VIDEOS, MEDIA_KIND_TORRENTS
@@ -38,7 +41,7 @@ class AnilibriaParser(parser.Parser):
 		super().__init__(url = url, main_url = main_url, headers = self.headers, query_kwargs = query_kwargs, query_parameter = query_parameter)
 		self.setup_urlopener()
 
-	def _find_best_match(self, resp, anime_names, release_link):
+	def _find_best_match(self, resp, anime_names):
 		page = BeautifulSoup(resp, features = "html5lib")
 		urls = page.find_all("a")
 		if not urls:
@@ -54,10 +57,6 @@ class AnilibriaParser(parser.Parser):
 			print("_find_best_match: name: %s" % name)
 
 			for k, v in results.items():
-				print("%s ===  %s" % (v, release_link))
-				if v == release_link:
-					return v
-
 				score = fuzz.ratio(name, k)
 				print("%s: name: %s, score=%d" % (name, k, score))
 				if score > best_score:
@@ -75,9 +74,9 @@ class AnilibriaParser(parser.Parser):
 		return best_result
 	def search_anime(self, anime_english, anime_aliases = [], type_ = ""):
 		names = [anime_english]
-		release_link = ""
+		anime_page_url = ""
 
-		print("%s aliases = %s" % (anime_english, misc.FORCE_ALIASES["anilibria"][anime_english]))
+		#print("%s aliases = %s" % (anime_english, misc.FORCE_ALIASES["anilibria"][anime_english]))
 
 		if anime_english in misc.FORCE_ALIASES["anilibria"]:
 			for a in misc.FORCE_ALIASES["anilibria"][anime_english]:
@@ -85,9 +84,23 @@ class AnilibriaParser(parser.Parser):
 					names += [a]
 				else:
 					print("release = %s" % a)
-					release_link = a
+					anime_page_url = a
 
-		found = False
+		found = (anime_page_url != "")
+		if anime_page_url:
+			try:
+				#print(anime_page_url)
+				res = self.browser_open(self.build_url(path = anime_page_url))
+			except RuntimeError:
+				tools.catch()
+
+			page_name = "%s.html" % names[0]
+			page_data = res.get_data()
+			self.save_page(page_name, page_data)
+
+			return page_data
+
+
 		print("anilibria: search_anime: anime_english=%s, anime_aliases=%s, names=%s" % (anime_english, str(anime_aliases), str(names)))
 		for anime_name in names:
 			page_name = "%s.html" % anime_name
@@ -119,11 +132,13 @@ class AnilibriaParser(parser.Parser):
 					continue
 
 				resp_data = resp["mes"]
-				if not resp_data:
+				if not resp_data and not anime_page_url:
 					print("!resp_data")
 					continue
 
-				anime_page_url = self._find_best_match(resp_data, anime_names = anime_aliases, release_link = release_link)
+				if not anime_page_url:
+					anime_page_url = self._find_best_match(resp_data, anime_names = anime_aliases)
+
 				print("search: anime_page_url=%s" % anime_page_url)
 				if not anime_page_url:
 					print("!anime_page_url")
@@ -135,14 +150,14 @@ class AnilibriaParser(parser.Parser):
 					tools.catch()
 					continue
 
-				page_data = res.get_data()
-
-			self.save_page(page_name, page_data)
 			found = True
 			break
 
 		if not found:
 			return None
+
+		page_data = res.get_data()
+		self.save_page(page_name, page_data)
 
 		return page_data
 
@@ -185,22 +200,26 @@ class AnilibriaParser(parser.Parser):
 			videos = {int(f["id"].split("s")[-1]): f["file"] for f in demjson.decode(videos_unparsed)["file"]}
 		except:
 			tools.catch()
-		
+
 		return authors, videos
-					
+
 
 	@Cache(prefix="AnilibriaParser")
 	def get_videos_list(self, anime_english, episode_num, type_ = ""):
+		existing_video = AnimeVideo.query.filter(AnimeVideo.anime_english == anime_english, AnimeVideo.episode == episode_num, AnimeVideo.url.like("%libria%")).first()
+		if existing_video:
+			return self.handler_epidode_exists(anime_english, episode_num, existing_video.url)
+
 		try:
 			obj = self.parse_anime_page(anime_english, type_)
 			authors, videos = obj
 		except:
-			print("parse_anime_page returned %s" % str(obj))
+			#print("parse_anime_page returned %s" % str(obj))
 			raise
 
 		if not episode_num in videos:
 			return self.handler_epidode_not_found(anime_english, episode_num)
-			
+
 		if not authors:
 			return self.handler_authors_not_found(anime_english)
 

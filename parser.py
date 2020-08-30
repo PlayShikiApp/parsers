@@ -180,5 +180,9 @@ class Parser:
 		print("Warning: episode %d for anime \"%s\" couldn't been found" % (episode_num, anime_english))
 		return None
 
+	def handler_epidode_exists(self, anime_english, episode_num, video_url):
+		print("Warning: episode %d for anime \"%s\" already exists in the database, url = %s" % (episode_num, anime_english, video_url))
+		return None
+
 	def handler_resource_is_unavailable(self):
 		return None
