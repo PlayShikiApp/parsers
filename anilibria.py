@@ -74,6 +74,7 @@ class AnilibriaParser(parser.Parser):
 		return best_result
 	def search_anime(self, anime_english, anime_aliases = [], type_ = ""):
 		names = [anime_english]
+		res = []
 		anime_page_url = ""
 
 		#print("%s aliases = %s" % (anime_english, misc.FORCE_ALIASES["anilibria"][anime_english]))
@@ -85,6 +86,8 @@ class AnilibriaParser(parser.Parser):
 				else:
 					print("release = %s" % a)
 					anime_page_url = a
+
+		#print(anime_page_url)
 
 		found = (anime_page_url != "")
 		if anime_page_url:
@@ -156,8 +159,9 @@ class AnilibriaParser(parser.Parser):
 		if not found:
 			return None
 
-		page_data = res.get_data()
-		self.save_page(page_name, page_data)
+		if (not page_data) and res:
+			page_data = res.get_data()
+			self.save_page(page_name, page_data)
 
 		return page_data
 
