@@ -18,6 +18,8 @@ CACHE_DIR = "parsers_cache"
 MEDIA_KIND_VIDEOS = "videos"
 MEDIA_KIND_TORRENTS = "torrents"
 
+STATUS_EXISTS = 1
+
 class Parser:
 	to_db_kind = {
                 "fandub": "озвучка",
@@ -182,7 +184,7 @@ class Parser:
 
 	def handler_epidode_exists(self, anime_english, episode_num, video_url):
 		print("Warning: episode %d for anime \"%s\" already exists in the database, url = %s" % (episode_num, anime_english, video_url))
-		return None
+		return STATUS_EXISTS
 
 	def handler_resource_is_unavailable(self):
 		return None

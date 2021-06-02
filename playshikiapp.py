@@ -5,6 +5,10 @@ import sys
 import pickle
 import pandas as pd
 
+from pandas.core.frame import DataFrame
+
+import parsers.parser
+
 from collections import OrderedDict
 from functools import lru_cache
 from sqlalchemy import create_engine
@@ -76,9 +80,10 @@ def get_videos_list(parser, anime_number, anime_total, anime_id, hosting, anime_
 		else:
 			df = parser.get_videos_list(anime_info["anime_english"], episode_num)
 
-		#if (episode_num == 2 and not (isinstance(df, type(None)) or df.empty)):
-		#	raise RuntimeError("wtf")
-		if (isinstance(df, type(None))) or df.empty:
+		if type(df) == int and (df == parsers.parser.STATUS_EXISTS):
+			continue
+
+		if isinstance(df, type(None)) or (type(df) == pd.DataFrame and df.empty):
 			note = "no videos found"
 			if (not fetch_only_ongoings or anime_id in ongoings.ONGOING_IDS):
 				note = "the max boundary episode_to was not specified."
