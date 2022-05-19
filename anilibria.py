@@ -97,12 +97,14 @@ class AnilibriaParser(parser.Parser):
 			except RuntimeError:
 				tools.catch()
 
-			page_name = "%s.html" % names[0]
-			page_data = res.get_data()
-			self.save_page(page_name, page_data)
+			try:
+				page_name = "%s.html" % names[0]
+				page_data = res.get_data()
+				self.save_page(page_name, page_data)
 
-			return page_data
-
+				return page_data
+			except:
+				tools.catch()
 
 		print("anilibria: search_anime: anime_english=%s, anime_aliases=%s, names=%s" % (anime_english, str(anime_aliases), str(names)))
 		for anime_name in names:
@@ -159,9 +161,13 @@ class AnilibriaParser(parser.Parser):
 		if not found:
 			return None
 
-		if (not page_data) and res:
-			page_data = res.get_data()
-			self.save_page(page_name, page_data)
+		try:
+			if (not page_data) and res:
+				page_data = res.get_data()
+				self.save_page(page_name, page_data)
+		except:
+			tools.catch()
+			return None
 
 		return page_data
 

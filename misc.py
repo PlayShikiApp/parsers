@@ -40,7 +40,9 @@ FORCE_ALIASES = {
 		"Honzuki no Gekokujou: Shisho ni Naru Tame ni wa Shudan wo Erandeiraremasen": ["/release/honzuki-no-gekokujou-shisho-ni-naru-tame-ni-wa-shudan-wo-erandeiraremasen.html"],
 		"Honzuki no Gekokujou: Shisho ni Naru Tame ni wa Shudan wo Erandeiraremasen 2nd Season" : ["/release/honzuki-no-gekokujou-shisho-ni-naru-tame-ni-wa-shudan-wo-erandeiraremasen-2nd-season.html"],
 		"Fate/Grand Order: Zettai Majuu Sensen Babylonia": ["/release/fategrand-order-zettai-majuu-sensen-babylonia.html"],
-		"Black Clover": ["/release/black-clover.html"]
+		"Black Clover": ["/release/black-clover.html"],
+		"Sousei no Onmyouji": ["/release/sousei-no-onmyouji.html"],
+		"Log Horizon: Entaku Houkai": ["/release/log-horizon-entaku-houkai.html"],
 	}
 }
 
