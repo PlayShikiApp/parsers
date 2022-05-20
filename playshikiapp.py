@@ -13,7 +13,7 @@ from collections import OrderedDict
 from functools import lru_cache
 from sqlalchemy import create_engine
 
-from parsers import ongoings, anime365, sovetromantica, sibnet, anilibria, misc
+from parsers import ongoings, anime365, sovetromantica, sibnet, anilibria, kodik, misc
 from parsers.parser import MEDIA_KIND_VIDEOS, MEDIA_KIND_TORRENTS
 from parsers.tools import catch
 from shikimori import routes, models
@@ -75,7 +75,7 @@ def get_videos_list(parser, anime_number, anime_total, anime_id, hosting, anime_
 
 	tmp_videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])
 	for episode_num in range(episode_from, episode_to):
-		if hosting == "nekomori":
+		if hosting == "kodik":
 			df = parser.get_videos_list(anime_english = anime_info["anime_english"], episode_num = episode_num, anime_id = anime_id)
 		else:
 			df = parser.get_videos_list(anime_info["anime_english"], episode_num)
@@ -116,7 +116,8 @@ def find_animes(parsers = OrderedDict([
 			("anilibria", anilibria.AnilibriaParser),
 			("smotretanime", anime365.Anime365Parser),
 			("sovetromantica", sovetromantica.SRParser),
-			("sibnet", sibnet.SibnetParser)
+			("sibnet", sibnet.SibnetParser),
+			("kodik", kodik.KodikParser)
 		      ]),
 		      anime_ids = [],
 		      media_kind = MEDIA_KIND_VIDEOS,
@@ -221,6 +222,9 @@ def find_animes(parsers = OrderedDict([
 				#		if not a.endswith(".html"):
 				#			search_kwargs["anime_aliases"]  = a
 				#			break
+
+			if hosting == "kodik":
+				search_kwargs["anime_id"] = anime_id
 
 			if not parser.search_anime(anime_info["anime_english"], **search_kwargs):
 				note = "not found"

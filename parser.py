@@ -158,8 +158,8 @@ class Parser:
 		netloc = netloc or self.netloc
 		return urllib.parse.urlunparse((scheme, netloc, path, params, query, fragment))
 
-	def build_search_url(self, anime_english, query_kwargs = {}, method = "GET"):
-		query_kwargs = self.build_query(anime_english, query_kwargs = query_kwargs)
+	def build_search_url(self, anime_english = "", query_kwargs = {}, method = "GET"):
+		query_kwargs = query_kwargs or self.build_query(anime_english, query_kwargs = query_kwargs)
 		if method == "GET":
 			built_url = urllib.parse.urlunparse((self.parsed_url.scheme, self.parsed_url.netloc, self.parsed_url.path, None, urlencode(query_kwargs, quote_via = quote_plus), None))
 			return built_url
