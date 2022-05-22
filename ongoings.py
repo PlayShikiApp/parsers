@@ -16,7 +16,7 @@ from parsers.parser import DATE_FORMAT
 from parsers.tools import catch
 
 ONGOING_IDS = []
-OUT_DIR = ""
+OUT_DIR = "21.05.2022"
 
 ANIME_TYPES = {
 	"TV Сериал":	"tv",
