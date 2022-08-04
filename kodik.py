@@ -78,27 +78,27 @@ class KodikParser(parser.Parser):
 		if anime_id < 0:
 			raise RuntimeError("anime_id must be provided")
 
-		episodes = []
 		anime_page = self.search_anime(anime_english, type_, anime_id = anime_id)
 		if not anime_page:
 			return self.handler_anime_not_found(anime_english)
 
 		try:
 			content_main = BeautifulSoup(anime_page, features = "html5lib")
-			options = content_main.find("div", {'class': 'serial-translations-box'}).find_all("option")
+			options = content_main.find("div", {'class': 'serial-series-box'}).find_all("option")
 		except:
 			return self.handler_epidode_not_found(anime_english, episode_num)
 
 		videos_list = pd.DataFrame(columns = ["url", "episode", "kind", "quality", "video_hosting", "language", "author"])
-		ep_nums = set()
 		for o in options:
-			shiki_kind = self.to_shiki_kind[o.get("data-translation-type")]
 			quality = "720p"
-			author = o.text
-			if author == "Субтитры":
-				author = "Unknown"
-			tmp_url = "https:" + o.get("value")
-			page_name = "%s-%s.html" % (anime_english, author)
+			episode_num_ = o.get("value")
+			if episode_num != int(episode_num_):
+				continue
+
+			data_id = o.get("data-id")
+			data_hash = o.get("data-hash")
+			tmp_url = "https://aniqit.com/seria/" + data_id + "/" + data_hash + "/720p"
+			page_name = "%s-%s.html" % (anime_english, episode_num_)
 			page_data = self.load_page(page_name)
 			if not page_data:
 				try:
@@ -110,23 +110,14 @@ class KodikParser(parser.Parser):
 				if not page_data:
 					continue
 			self.save_page(page_name, page_data)
-			try:
-				content = BeautifulSoup(page_data, features = "html5lib")
-				episodes = content.find("div", {'class': 'serial-series-box'}).find_all("option")
-				[ep_nums.add(int(ep.get("data-num"))) for ep in episodes]
-				#print(anime_english, ep_nums)
-				if episode_num not in ep_nums:
-					return self.handler_epidode_not_found(anime_english, episode_num)
-			except:
-				return self.handler_epidode_not_found(anime_english, episode_num)
+			content = BeautifulSoup(page_data, features = "html5lib")
+			options = content.find("div", {'class': 'movie-translations-box'}).find_all("option")
 
-			for ep in episodes:
-				episode_num_ = int(ep.get("data-num"))
-				if episode_num_ != episode_num:
-					continue
+			for op in options:
+				url = "https://aniqit.com/seria/" + op.get("data-media-id") + "/" + op.get("data-media-hash") + "/720p"
+				shiki_kind = self.to_shiki_kind[op.get("data-translation-type")]
+				author = op.text
 
-				url = "https:" + ep.get("value").split("?")[0]
-				#print(url)
 				videos_list = videos_list.append({
 					"url": url,
 					"episode": str(episode_num_),
