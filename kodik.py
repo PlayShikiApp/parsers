@@ -111,7 +111,10 @@ class KodikParser(parser.Parser):
 					continue
 			self.save_page(page_name, page_data)
 			content = BeautifulSoup(page_data, features = "html5lib")
-			options = content.find("div", {'class': 'movie-translations-box'}).find_all("option")
+			try:
+				options = content.find("div", {'class': 'movie-translations-box'}).find_all("option")
+			except:
+				return self.handler_epidode_not_found(anime_english, episode_num)
 
 			for op in options:
 				url = "https://aniqit.com/seria/" + op.get("data-media-id") + "/" + op.get("data-media-hash") + "/720p"

@@ -117,7 +117,18 @@ def find(haystack, needle):
 	return -1
 
 class SibnetParser(parser.Parser):
-	headers = {'User-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 OPR/43.0.2442.1144'}
+	headers = {
+		'User-agent': 'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.3',
+		'Connection': 'keep-alive',
+		'Upgrade-Insecure-Requests': '1',
+		'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+		'Sec-Fetch-Site': 'same-origin',
+		'Sec-Fetch-Mode': 'navigate',
+		'Sec-Fetch-User': '?1',
+		'Sec-Fetch-Dest': 'document',
+		'Referer': 'https://video.sibnet.ru/',
+		'Accept-Language': 'en-US,en;q=0.9,ru;q=0.8',
+	}
 
 	to_shiki_kind = {"озвучка": "fandub", "subtitles": "subtitles", "субтитры": "subtitles"}
 
@@ -503,8 +514,20 @@ class SibnetParser(parser.Parser):
 				page_data = res.get_data()
 				redir_url = res.geturl()
 
-			# not found
 			html = BeautifulSoup(page_data, features = "html5lib")
+			robot_div = html.find("div", {"class": "robot"})
+			if robot_div != None:
+				print("robots div found")
+				search_url = robot_div.find("a").get("href")
+				try:
+					res = self.browser_open(search_url)
+				except RuntimeError:
+					tools.catch()
+					return self.handler_resource_is_unavailable()
+				page_data = res.get_data()
+				redir_url = res.geturl()
+				html = BeautifulSoup(page_data, features = "html5lib")
+
 			p = html.find("div", {"class": "content"}).find("p", {"style": "margin-top:20px; text-align:center;"})
 			if p and p.text == "По Вашему запросу ничего не найдено":
 				print("not found")
@@ -524,7 +547,11 @@ class SibnetParser(parser.Parser):
 		return page_data
 
 	def validate_results_page(self, anime_page):
-		search_tit = [s for s in anime_page.find("div", {"class": "search_tit"}).strings]
+		search_tit = anime_page.find("div", {"class": "search_tit"})
+		if not search_tit:
+			return None
+
+		search_tit = [s for s in search_tit.strings]
 		if (len(search_tit) != 2) or (search_tit[0] != "Найдено видеороликов: ") or (not search_tit[1].isdigit()):
 			return None
 

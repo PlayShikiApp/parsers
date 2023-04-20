@@ -76,7 +76,6 @@ class AnilibriaParser(parser.Parser):
 		names = [anime_english]
 		res = []
 		anime_page_url = ""
-
 		#print("%s aliases = %s" % (anime_english, misc.FORCE_ALIASES["anilibria"][anime_english]))
 
 		if anime_english in misc.FORCE_ALIASES["anilibria"]:

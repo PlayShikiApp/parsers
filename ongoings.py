@@ -16,7 +16,7 @@ from parsers.parser import DATE_FORMAT
 from parsers.tools import catch
 
 ONGOING_IDS = []
-OUT_DIR = "21.05.2022"
+OUT_DIR = "19.04.2023"
 
 ANIME_TYPES = {
 	"TV Сериал":	"tv",
@@ -30,7 +30,7 @@ def get_ongoing_id(article):
 	return int("".join([i for i in urllib.parse.urlparse(ongoing_url).path.split("/")[2].split("-")[0] if i.isdigit()]))
 
 def get_anime_page_url(id):
-	return "https://shikimori.one/animes/z%d" % id
+	return "https://shikimori.me/animes/z%d" % id
 
 def fetch_all_ongoings(ids):
 	OUT_DIR = datetime.now().strftime(DATE_FORMAT)
