@@ -25,6 +25,11 @@ ANIME_TYPES = {
 	"Спешл":	"special"
 }
 
+shiki_default_headers = {
+	"User-Agent": "curl/7.65.3",
+	"Accept": "*/*"
+}
+
 def get_ongoing_id(article):
 	ongoing_url = article.find("a").get("data-tooltip_url")
 	return int("".join([i for i in urllib.parse.urlparse(ongoing_url).path.split("/")[2].split("-")[0] if i.isdigit()]))
@@ -45,7 +50,7 @@ def fetch_all_ongoings(ids):
 		if os.path.exists(out_file) and os.stat(out_file).st_size != 0:
 			continue
 
-		req = urllib.request.Request(url)
+		req = urllib.request.Request(url, headers = shiki_default_headers)
 		time.sleep(1.5)
 		error = True
 		retries = 5
